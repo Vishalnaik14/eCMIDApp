@@ -12,30 +12,42 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useUser } from '../../hooks/useUser';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { 
+  responsiveWidth, 
+  responsiveHeight, 
+  responsiveFontSize, 
+  responsivePadding,
+  getDeviceType,
+  getFormSizing,
+  SCREEN_WIDTH,
+  SCREEN_HEIGHT
+} from '../../utils/responsive';
+// import { useUser } from '../../hooks/useUser';
 
 export default function LoginScreen() {
   const router = useRouter();
-  const { login } = useUser();
+  const insets = useSafeAreaInsets();
+  // const { login } = useUser();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  
+  // Get responsive values
+  const deviceType = getDeviceType();
+  const formSizing = getFormSizing();
 
   const handleLogin = async () => {
     if (!email || !password) {
       Alert.alert('Error', 'Please enter both email and password');
       return;
     }
-
     setLoading(true);
-    try {
-      await login(email, password);
-      // Navigation will be handled by index.jsx based on auth state
-    } catch (error) {
-      Alert.alert('Login Failed', error.message || 'Invalid credentials');
-    } finally {
+    setTimeout(() => {
       setLoading(false);
-    }
+      // Temp navigation until backend is wired
+      router.replace('/home');
+    }, 600);
   };
 
   const handleForgotPassword = () => {
@@ -53,38 +65,61 @@ export default function LoginScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
-        <View style={styles.headerContainer}>
-          <Text style={styles.signInText}>Sign in</Text>
+        <View style={[styles.headerContainer, { 
+          paddingVertical: responsivePadding(20),
+          minHeight: responsiveHeight(80)
+        }]}>
+          <Text style={[styles.signInText, { fontSize: responsiveFontSize(24) }]}>
+            Sign in
+          </Text>
         </View>
 
         {/* Logos */}
-        <View style={styles.logosContainer}>
+        <View style={[styles.logosContainer, { 
+          marginBottom: responsivePadding(40),
+          paddingHorizontal: responsivePadding(20)
+        }]}>
           <Image
-            source={require('../../assets/img/logo_dark.png')}
-            style={styles.ecmidLogo}
+            source={require('../../assets/img/ecmidlogoblack.png')}
+            style={[styles.ecmidLogo, { 
+              width: responsiveWidth(110), 
+              height: responsiveHeight(110) 
+            }]}
             resizeMode="contain"
           />
           <Image
-            source={require('../../assets/img/logo_light.png')}
-            style={styles.airlineLogo}
+            source={require('../../assets/img/logo_iims.png')}
+            style={[styles.airlineLogo, { 
+              width: responsiveWidth(110), 
+              height: responsiveHeight(90) 
+            }]}
             resizeMode="contain"
           />
         </View>
 
         {/* Form Container */}
-        <View style={styles.formContainer}>
+        <View style={[styles.formContainer, { 
+          paddingHorizontal: formSizing.padding,
+          marginBottom: responsivePadding(30)
+        }]}>
           {/* Email Input */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Email Address</Text>
+          <View style={[styles.inputGroup, { marginBottom: responsivePadding(20) }]}>
+            <Text style={[styles.label, { fontSize: responsiveFontSize(14) }]}>
+              Email Address
+            </Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, { 
+                height: formSizing.inputHeight,
+                fontSize: formSizing.fontSize,
+                borderRadius: formSizing.borderRadius
+              }]}
               placeholder="Enter your email"
               placeholderTextColor="#999"
               keyboardType="email-address"
@@ -96,10 +131,16 @@ export default function LoginScreen() {
           </View>
 
           {/* Password Input */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Password</Text>
+          <View style={[styles.inputGroup, { marginBottom: responsivePadding(20) }]}>
+            <Text style={[styles.label, { fontSize: responsiveFontSize(14) }]}>
+              Password
+            </Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, { 
+                height: formSizing.inputHeight,
+                fontSize: formSizing.fontSize,
+                borderRadius: formSizing.borderRadius
+              }]}
               placeholder="Enter your password"
               placeholderTextColor="#999"
               secureTextEntry={true}
@@ -111,46 +152,66 @@ export default function LoginScreen() {
 
           {/* Login Button */}
           <TouchableOpacity
-            style={[styles.loginButton, loading && styles.loginButtonDisabled]}
+            style={[styles.loginButton, loading && styles.loginButtonDisabled, {
+              paddingVertical: responsivePadding(16),
+              borderRadius: formSizing.borderRadius,
+              marginTop: responsivePadding(10),
+              marginBottom: responsivePadding(20)
+            }]}
             onPress={handleLogin}
             activeOpacity={0.8}
             disabled={loading}
           >
             {loading ? (
-              <ActivityIndicator color="#ffffff" />
+              <ActivityIndicator color="#ffffff" size={responsiveWidth(20)} />
             ) : (
-              <Text style={styles.loginButtonText}>LOGIN</Text>
+              <Text style={[styles.loginButtonText, { fontSize: responsiveFontSize(16) }]}>
+                LOGIN
+              </Text>
             )}
           </TouchableOpacity>
 
           {/* Forgot Password */}
           <TouchableOpacity
             onPress={handleForgotPassword}
-            style={styles.forgotPasswordContainer}
+            style={[styles.forgotPasswordContainer, { marginBottom: responsivePadding(10) }]}
             disabled={loading}
           >
-            <Text style={styles.forgotPasswordText}>
+            <Text style={[styles.forgotPasswordText, { fontSize: responsiveFontSize(12) }]}>
               FORGOT PASSWORD? <Text style={styles.clickHereLink}>Click Here</Text>
             </Text>
           </TouchableOpacity>
 
           {/* Footer Links */}
-          <View style={styles.footerLinksContainer}>
+          <View style={[styles.footerLinksContainer, { 
+            marginBottom: responsivePadding(20),
+            paddingHorizontal: responsivePadding(20)
+          }]}>
             <TouchableOpacity onPress={() => openLink('https://example.com/terms')}>
-              <Text style={styles.footerLink}>Terms & Conditions</Text>
+              <Text style={[styles.footerLink, { fontSize: responsiveFontSize(12) }]}>
+                Terms & Conditions
+              </Text>
             </TouchableOpacity>
-            <Text style={styles.footerSeparator}>    </Text>
+            <Text style={[styles.footerSeparator, { fontSize: responsiveFontSize(12) }]}>    </Text>
             <TouchableOpacity onPress={() => openLink('https://example.com/privacy')}>
-              <Text style={styles.footerLink}>Privacy Policy</Text>
+              <Text style={[styles.footerLink, { fontSize: responsiveFontSize(12) }]}>
+                Privacy Policy
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
       </ScrollView>
 
       {/* Copyright - Fixed at bottom */}
-      <View style={styles.copyrightContainer}>
+      <View style={[styles.copyrightContainer, { 
+        paddingBottom: insets.bottom,
+        paddingVertical: responsivePadding(15),
+        paddingHorizontal: responsivePadding(20)
+      }]}>
         <TouchableOpacity onPress={handleContactUs}>
-          <Text style={styles.contactLink}>Copyright © 2025 | Contact Us</Text>
+          <Text style={[styles.contactLink, { fontSize: responsiveFontSize(12) }]}>
+            Copyright © 2025 | Contact Us
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -166,16 +227,15 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentContainer: {
-    paddingVertical: 20,
+    paddingVertical: responsivePadding(20),
+    flexGrow: 1,
   },
   headerContainer: {
     backgroundColor: '#1e9fd8',
-    paddingVertical: 20,
     alignItems: 'center',
-    marginBottom: 30,
+    marginBottom: responsivePadding(30),
   },
   signInText: {
-    fontSize: 24,
     fontWeight: '600',
     color: '#ffffff',
   },
@@ -183,28 +243,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    marginBottom: 40,
-    paddingHorizontal: 20,
   },
-  ecmidLogo: {
-    width: 80,
-    height: 80,
-  },
-  airlineLogo: {
-    width: 80,
-    height: 80,
-  },
+  ecmidLogo: {},
+  airlineLogo: {},
   formContainer: {
-    paddingHorizontal: 20,
-    marginBottom: 30,
+    flex: 1,
   },
-  inputGroup: {
-    marginBottom: 20,
-  },
+  inputGroup: {},
   label: {
-    fontSize: 14,
     color: '#999',
-    marginBottom: 8,
+    marginBottom: responsivePadding(8),
     fontWeight: '500',
   },
   input: {
@@ -212,34 +260,26 @@ const styles = StyleSheet.create({
     borderWidth: 0,
     borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
-    paddingVertical: 12,
+    paddingVertical: responsivePadding(12),
     paddingHorizontal: 0,
-    fontSize: 16,
     color: '#333',
   },
   loginButton: {
     backgroundColor: '#1e9fd8',
-    paddingVertical: 16,
-    borderRadius: 4,
     alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 20,
   },
   loginButtonDisabled: {
     opacity: 0.6,
   },
   loginButtonText: {
     color: '#ffffff',
-    fontSize: 16,
     fontWeight: '600',
     letterSpacing: 1,
   },
   forgotPasswordContainer: {
     alignItems: 'center',
-    marginBottom: 10,
   },
   forgotPasswordText: {
-    fontSize: 12,
     color: '#999',
   },
   clickHereLink: {
@@ -250,26 +290,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
-    paddingHorizontal: 20,
   },
   footerLink: {
-    fontSize: 12,
     color: '#1e9fd8',
   },
   footerSeparator: {
-    fontSize: 12,
     color: '#999',
   },
   copyrightContainer: {
     borderTopWidth: 1,
     borderTopColor: '#e0e0e0',
-    paddingVertical: 15,
-    paddingHorizontal: 20,
     backgroundColor: '#f5f5f5',
   },
   contactLink: {
-    fontSize: 12,
     color: '#666',
+    textAlign: 'center',
   },
 });

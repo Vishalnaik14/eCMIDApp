@@ -5,19 +5,39 @@
     "slug": "eCMIDApp",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/img/logo_light.png",
+    "icon": "./assets/img/ecmidlogoblack.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/img/ecmidlogoblack.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1e9fd8"
+    },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "requireFullScreen": false,
+      "statusBarStyle": "light-content",
+      "statusBarBackgroundColor": "#1e9fd8",
+      "splash": {
+        "image": "./assets/img/ecmidlogoblack.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#1e9fd8"
+      }
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/img/ecmidlogoblack.png",
+        "backgroundColor": "#1e9fd8"
+      },
+      "splash": {
+        "image": "./assets/img/ecmidlogoblack.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#1e9fd8"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.anonymous.eCMIDApp"
+      "package": "com.anonymous.eCMIDApp",
+      "statusBarStyle": "light-content",
+      "statusBarBackgroundColor": "#1e9fd8"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -27,7 +47,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/img/logo_light.png",
+          "image": "./assets/img/ecmidlogoblack.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#1e9fd8"

@@ -1,26 +1,102 @@
-import { Pressable, StyleSheet } from 'react-native'
-import { Colors } from '../constants/Colors'
+import React from 'react';
+import { TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
 
-function ThemedButton({ style, ...props }) {
+const ThemedButton = ({ 
+  title, 
+  onPress, 
+  variant = 'primary',
+  size = 'medium',
+  loading = false,
+  disabled = false,
+  style,
+  textStyle,
+  ...props 
+}) => {
+  const getButtonStyle = () => {
+    const baseStyle = [styles.button, styles[variant], styles[size]];
+    if (disabled || loading) {
+      baseStyle.push(styles.disabled);
+    }
+    if (style) {
+      baseStyle.push(style);
+    }
+    return baseStyle;
+  };
+
+  const getTextStyle = () => {
+    const baseStyle = [styles.text, styles[`${variant}Text`], styles[`${size}Text`]];
+    if (textStyle) {
+      baseStyle.push(textStyle);
+    }
+    return baseStyle;
+  };
 
   return (
-    <Pressable 
-      style={({ pressed }) => [styles.btn, pressed && styles.pressed, style]} 
+    <TouchableOpacity
+      style={getButtonStyle()}
+      onPress={onPress}
+      disabled={disabled || loading}
+      activeOpacity={0.8}
       {...props}
-    />
-  )
-}
+    >
+      {loading ? (
+        <ActivityIndicator color={variant === 'primary' ? '#ffffff' : '#1e9fd8'} />
+      ) : (
+        <Text style={getTextStyle()}>{title}</Text>
+      )}
+    </TouchableOpacity>
+  );
+};
 
 const styles = StyleSheet.create({
-  btn: {
-    backgroundColor: Colors.primary,
-    padding: 18,
-    borderRadius: 6,
-    marginVertical: 10
+  button: {
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
   },
-  pressed: {
-    opacity: 0.5
+  primary: {
+    backgroundColor: '#347a8c',
   },
-})
+  secondary: {
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#347a8c',
+  },
+  small: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+  },
+  medium: {
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+  },
+  large: {
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+  },
+  disabled: {
+    opacity: 0.6,
+  },
+  text: {
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  primaryText: {
+    color: '#ffffff',
+  },
+  secondaryText: {
+    color: '#347a8c',
+  },
+  smallText: {
+    fontSize: 14,
+  },
+  mediumText: {
+    fontSize: 16,
+  },
+  largeText: {
+    fontSize: 18,
+  },
+});
 
-export default ThemedButton
+export default ThemedButton;

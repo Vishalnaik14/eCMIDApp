@@ -8,6 +8,7 @@ import {
   ScrollView,
   Image,
   Alert,
+  ImageBackground,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -21,12 +22,12 @@ export default function ContactUsScreen() {
 
   const validate = () => {
     if (!name.trim() || !email.trim() || !subject.trim() || !details.trim()) {
-      Alert.alert('Validation', 'Please fill in all required fields.');
+      Alert.alert('Please fill in all required fields');
       return false;
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email.trim())) {
-      Alert.alert('Validation', 'Please enter a valid email address.');
+      Alert.alert('Please enter a valid email address');
       return false;
     }
     return true;
@@ -38,20 +39,34 @@ export default function ContactUsScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <ImageBackground
+      source={require('../../assets/img/bluebackgrounddark2.png')}
+      style={styles.container}
+      resizeMode="cover"
+    >
+      {/* Header */}
       <View style={styles.headerContainer}>
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={24} color="#ffffff" />
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => router.back()}
+          hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+          activeOpacity={0.7}
+        >
+          <Ionicons name="arrow-back" size={26} color="#ffffff" />
         </TouchableOpacity>
         <Text style={styles.headerText}>Get In Touch</Text>
         <Image
-          source={require('../../assets/img/logo_light.png')}
+          source={require('../../assets/img/ecmidlogoblack.png')}
           style={styles.headerLogo}
           resizeMode="contain"
         />
       </View>
 
-      <ScrollView style={styles.scrollView} contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.contentContainer}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.formContainer}>
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Name:</Text>
@@ -106,14 +121,13 @@ export default function ContactUsScreen() {
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1e9fd8',
   },
   headerContainer: {
     backgroundColor: '#1e9fd8',
@@ -125,7 +139,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   backButton: {
-    padding: 5,
+    padding: 8,
+    marginLeft: -8,
+    zIndex: 10,
   },
   headerText: {
     fontSize: 20,
@@ -136,8 +152,8 @@ const styles = StyleSheet.create({
     marginLeft: -29,
   },
   headerLogo: {
-    width: 40,
-    height: 40,
+    width: 56,
+    height: 56,
   },
   scrollView: {
     flex: 1,
@@ -190,5 +206,3 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
 });
-
-

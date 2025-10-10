@@ -9,6 +9,7 @@ import {
   Image,
   Alert,
   ActivityIndicator,
+  ImageBackground,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useUser } from '../../hooks/useUser';
@@ -64,18 +65,24 @@ export default function ForgotPasswordScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <ImageBackground
+      source={require('../../assets/img/bluebackgrounddark2.png')}
+      style={styles.container}
+      resizeMode="cover"
+    >
       {/* Header */}
       <View style={styles.headerContainer}>
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => router.back()}
+          activeOpacity={0.7}
+          hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
         >
-          <Ionicons name="arrow-back" size={24} color="#ffffff" />
+          <Ionicons name="arrow-back" size={26} color="#ffffff" />
         </TouchableOpacity>
         <Text style={styles.headerText}>Forgot Password</Text>
         <Image
-          source={require('../../assets/img/logo_light.png')}
+          source={require('../../assets/img/ecmidlogoblack.png')}
           style={styles.headerLogo}
           resizeMode="contain"
         />
@@ -153,14 +160,13 @@ export default function ForgotPasswordScreen() {
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1e9fd8',
   },
   headerContainer: {
     backgroundColor: '#1e9fd8',
@@ -172,7 +178,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   backButton: {
-    padding: 5,
+    padding: 8,
+    marginLeft: -8,
+    zIndex: 10,
   },
   headerText: {
     fontSize: 20,
@@ -183,8 +191,8 @@ const styles = StyleSheet.create({
     marginLeft: -29,
   },
   headerLogo: {
-    width: 40,
-    height: 40,
+    width: 56,
+    height: 56,
   },
   scrollView: {
     flex: 1,

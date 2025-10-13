@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { StyleSheet, TouchableOpacity, View, Modal, ScrollView } from 'react-native'
 import ThemedView from './ThemedView'
 import ThemedText from './ThemedText'
@@ -9,6 +9,17 @@ const ThemedDatePicker = ({ value, onDateChange, label = "Date of Birth" }) => {
   const [showMonthPicker, setShowMonthPicker] = useState(false)
   const [currentMonth, setCurrentMonth] = useState(value ? new Date(value) : new Date())
   const [selectedDate, setSelectedDate] = useState(value)
+
+  // Add useEffect to sync with prop changes
+  useEffect(() => {
+    if (value === null) {
+      setSelectedDate(null)
+      setCurrentMonth(new Date())
+    } else if (value) {
+      setSelectedDate(value)
+      setCurrentMonth(new Date(value))
+    }
+  }, [value])
 
   const formatDate = (date) => {
     if (!date) return 'Select Date'

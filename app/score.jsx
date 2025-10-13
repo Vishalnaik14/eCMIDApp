@@ -25,7 +25,7 @@ export default function ScoreScreen() {
     try {
       // Simulate API call or navigation
       await new Promise(resolve => setTimeout(resolve, 1000));
-      navigateTo('/home');
+      navigateTo('/claim-points');
     } catch (error) {
       console.error('Error getting more points:', error);
     } finally {

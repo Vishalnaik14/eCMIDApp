@@ -66,6 +66,8 @@ export default function RootLayout() {
           <Stack.Screen name="about" />
           <Stack.Screen name="about-ecmid" />
           <Stack.Screen name="score" />
+          <Stack.Screen name="claim-points" />
+          <Stack.Screen name="points-table" />
           <Stack.Screen name="(auth)" />
         </Stack>
       </UserProvider>

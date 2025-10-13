@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   ScrollView,
   ImageBackground,
   Linking,
+  ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -16,9 +17,65 @@ import { useNavigation } from '../hooks/useNavigation';
 export default function AboutECMIDScreen() {
   const insets = useSafeAreaInsets();
   const { goBack } = useNavigation();
+  
+  // State for dynamic content
+  const [aboutData, setAboutData] = useState({
+    title: 'Welcome to the eCMID Continuing Professional Development Programme',
+    content: `organisation, MSA is dedicated to providing the best quality marine skills-based training and accreditation.
+
+As the commercial arm of the Institute, MSA is able to call on a wide selection of members and other maritime specialist and experts, who have various skills and knowledge acquired over many years. On one level the aim of the MSA is to provide basic short course training for IIMS members and non-members in a range of subjects. At a higher level the MSA delivers training and examinations leading to formal accreditation and qualifications certified by the IIMS.
+
+The MSA is being developed to meet the growing demand from a number of international marine organisations for specialised skills-based training and accreditation schemes. MSA delivers these training solutions at various locations, using specialist tutors and examiners.
+
+For more information visit the website at http://marinesurveyingacademy.com`,
+    helpUrl: 'https://www.marinesurveyingacademy.com',
+    lastUpdated: null,
+  });
+  
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Fetch content from API
+  useEffect(() => {
+    fetchAboutContent();
+  }, []);
+
+  const fetchAboutContent = async () => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      // TODO: Replace with your actual API endpoint
+      // const response = await fetch('YOUR_API_ENDPOINT/about-ecmid');
+      // const data = await response.json();
+      
+      // Example API response structure:
+      // {
+      //   title: "Welcome to the eCMID Continuing Professional Development Programme",
+      //   content: "Full content text here...",
+      //   helpUrl: "https://www.marinesurveyingacademy.com",
+      //   lastUpdated: "2025-10-11T10:00:00Z"
+      // }
+      
+      // Uncomment when API is ready:
+      // setAboutData({
+      //   title: data.title || aboutData.title,
+      //   content: data.content || aboutData.content,
+      //   helpUrl: data.helpUrl || aboutData.helpUrl,
+      //   lastUpdated: data.lastUpdated,
+      // });
+      
+    } catch (err) {
+      console.error('Error fetching about content:', err);
+      setError('Failed to load content. Showing cached version.');
+      // Keep using default/cached data
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const openHelp = async () => {
-    const url = 'https://www.marinesurveyingacademy.com';
+    const url = aboutData.helpUrl;
     try {
       const canOpen = await Linking.canOpenURL(url);
       if (canOpen) await Linking.openURL(url);
@@ -51,40 +108,51 @@ export default function AboutECMIDScreen() {
         />
       </View>
 
-      {/* Card with scrollable about text - now flexes to fill space */}
+      {/* Card with scrollable about text */}
       <View style={styles.card}>
         <View style={styles.cardHeader}>
           <Text style={styles.cardHeaderText}>
-            Welcome to the eCMID Continuing Professional Development Programme
+            {aboutData.title}
           </Text>
+          {aboutData.lastUpdated && (
+            <Text style={styles.lastUpdatedText}>
+              Last updated: {new Date(aboutData.lastUpdated).toLocaleDateString()}
+            </Text>
+          )}
         </View>
-        <ScrollView
-          style={styles.cardScroll}
-          contentContainerStyle={styles.cardScrollContent}
-          showsVerticalScrollIndicator={false}
-        >
-          <Text style={styles.cardBodyText}>
-            {/* Hardcoded placeholder text per instructions */}
-            organisation, MSA is dedicated to providing the best quality marine skills-based
-            training and accreditation.{"\n\n"}
-            As the commercial arm of the Institute, MSA is able to call on a wide selection of
-            members and other maritime specialist and experts, who have various skills and
-            knowledge acquired over many years. On one level the aim of the MSA is to provide
-            basic short course training for IIMS members and non-members in a range of subjects.
-            At a higher level the MSA delivers training and examinations leading to formal
-            accreditation and qualifications certified by the IIMS.{"\n\n"}
-            The MSA is being developed to meet the growing demand from a number of international
-            marine organisations for specialised skills-based training and accreditation schemes.
-            MSA delivers these training solutions at various locations, using specialist tutors and
-            examiners.{"\n\n"}
-            For more information visit the website at http://marinesurveyingacademy.com
-          </Text>
-        </ScrollView>
+        
+        {isLoading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#ffffff" />
+            <Text style={styles.loadingText}>Loading content...</Text>
+          </View>
+        ) : (
+          <ScrollView
+            style={styles.cardScroll}
+            contentContainerStyle={styles.cardScrollContent}
+            showsVerticalScrollIndicator={false}
+          >
+            {error && (
+              <View style={styles.errorBanner}>
+                <Ionicons name="warning" size={16} color="#ffcc00" />
+                <Text style={styles.errorText}>{error}</Text>
+              </View>
+            )}
+            <Text style={styles.cardBodyText}>
+              {aboutData.content}
+            </Text>
+          </ScrollView>
+        )}
       </View>
 
       {/* Help button */}
       <View style={styles.bottomBar}>
-        <TouchableOpacity style={styles.helpButton} onPress={openHelp} activeOpacity={0.85}>
+        <TouchableOpacity 
+          style={styles.helpButton} 
+          onPress={openHelp} 
+          activeOpacity={0.85}
+          disabled={isLoading}
+        >
           <Text style={styles.helpButtonText}>HELP</Text>
         </TouchableOpacity>
       </View>
@@ -141,6 +209,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: '600',
   },
+  lastUpdatedText: {
+    fontSize: 10,
+    color: '#888888',
+    textAlign: 'center',
+    marginTop: 4,
+    fontStyle: 'italic',
+  },
   cardScroll: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.25)',
@@ -154,6 +229,32 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 12.5,
     lineHeight: 18,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.25)',
+    paddingVertical: 40,
+  },
+  loadingText: {
+    color: '#ffffff',
+    fontSize: 14,
+    marginTop: 12,
+  },
+  errorBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 204, 0, 0.2)',
+    padding: 10,
+    borderRadius: 4,
+    marginBottom: 12,
+  },
+  errorText: {
+    color: '#ffcc00',
+    fontSize: 12,
+    marginLeft: 8,
+    flex: 1,
   },
   bottomBar: {
     paddingHorizontal: 16,

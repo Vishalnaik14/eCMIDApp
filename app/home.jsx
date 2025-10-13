@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   Image,
   Alert,
   ImageBackground,
+  ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -15,6 +16,61 @@ import { useNavigation } from '../hooks/useNavigation';
 export default function HomeScreen() {
   const { navigateTo } = useNavigation();
   const insets = useSafeAreaInsets();
+
+  // State for dynamic user data
+  const [userData, setUserData] = useState({
+    companyName: 'Aldrige EDOT Solutions',
+    score: 0,
+    userId: null,
+  });
+  const [isLoadingScore, setIsLoadingScore] = useState(false);
+  const [scoreError, setScoreError] = useState(null);
+
+  // Fetch user score on component mount
+  useEffect(() => {
+    fetchUserScore();
+  }, []);
+
+  const fetchUserScore = async () => {
+    setIsLoadingScore(true);
+    setScoreError(null);
+
+    try {
+      // TODO: Replace with your actual API endpoint
+      // const response = await fetch('YOUR_API_ENDPOINT/user/score', {
+      //   headers: {
+      //     'Authorization': `Bearer ${yourAuthToken}`,
+      //   },
+      // });
+      // const data = await response.json();
+
+      // Example API response structure:
+      // {
+      //   companyName: "Aldrige EDOT Solutions",
+      //   score: 0,
+      //   userId: "12345",
+      //   lastUpdated: "2025-10-11T10:00:00Z"
+      // }
+
+      // Uncomment when API is ready:
+      // setUserData({
+      //   companyName: data.companyName || userData.companyName,
+      //   score: data.score ?? 0,
+      //   userId: data.userId,
+      // });
+
+      // Simulate API call for testing (remove this in production)
+      // await new Promise(resolve => setTimeout(resolve, 1000));
+      // setUserData(prev => ({ ...prev, score: 0 }));
+
+    } catch (err) {
+      console.error('Error fetching user score:', err);
+      setScoreError('Failed to load score');
+      // Keep using default/cached data
+    } finally {
+      setIsLoadingScore(false);
+    }
+  };
 
   const handleLogout = () => {
     Alert.alert(
@@ -36,9 +92,9 @@ export default function HomeScreen() {
   };
 
   const tiles = [
-    { key: 'claim', label: 'Claim Points', icon: 'gift-outline', onPress: () => {} },
+    { key: 'claim', label: 'Claim Points', icon: 'gift-outline', onPress: () => navigateTo('/claim-points') },
     { key: 'activity', label: 'My Activity', icon: 'document-text-outline', onPress: () => {} },
-    { key: 'points-table', label: 'Points Table', icon: 'calendar-outline', onPress: () => {} },
+    { key: 'points-table', label: 'Points Table', icon: 'calendar-outline', onPress: () => navigateTo('/points-table') },
     { key: 'about-ecmid', label: 'About eCMID', icon: 'reader-outline', isImage: true, onPress: () => navigateTo('/about-ecmid') },
     { key: 'about-app', label: 'About App', icon: 'information-outline', onPress: () => navigateTo('/about') },
     { key: 'logout', label: 'Logout', icon: 'log-out-outline', onPress: handleLogout },
@@ -56,11 +112,28 @@ export default function HomeScreen() {
           />
           <View style={styles.headerTextBlock}>
             <Text style={styles.companyName}>
-              Aldrige EDOT Solutions
+              {userData.companyName}
             </Text>
-            <Text style={styles.pointsText}>
-              Your eCMID CPD Score is  0
-            </Text>
+            <View style={styles.scoreContainer}>
+              {isLoadingScore ? (
+                <View style={styles.loadingRow}>
+                  <ActivityIndicator size="small" color="#666666" />
+                  <Text style={styles.pointsText}>Loading score...</Text>
+                </View>
+              ) : (
+                <Text style={styles.pointsText}>
+                  Your eCMID CPD Score is {userData.score}
+                </Text>
+              )}
+              {scoreError && (
+                <TouchableOpacity 
+                  onPress={fetchUserScore}
+                  hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}
+                >
+                  <Ionicons name="refresh" size={16} color="#ff6b6b" style={styles.refreshIcon} />
+                </TouchableOpacity>
+              )}
+            </View>
           </View>
         </View>
         <TouchableOpacity 
@@ -161,9 +234,21 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginBottom: 4,
   },
+  scoreContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  loadingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   pointsText: {
     color: '#666666',
     fontSize: 13,
+    marginLeft: 6,
+  },
+  refreshIcon: {
+    marginLeft: 8,
   },
   gridContainer: {
     flex: 1,

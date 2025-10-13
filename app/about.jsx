@@ -29,6 +29,21 @@ export default function AboutScreen() {
     }
   };
 
+  const openEmail = async () => {
+    const email = 'contact@edot-solutions.com';
+    const url = `mailto:${email}`;
+    try {
+      const supported = await Linking.canOpenURL(url);
+      if (supported) {
+        await Linking.openURL(url);
+      } else {
+        console.warn('Cannot open email:', email);
+      }
+    } catch (err) {
+      console.warn('Failed to open email:', err);
+    }
+  };
+
   return (
     <ImageBackground
       source={require('../assets/img/bluebackgrounddark2.png')}
@@ -77,6 +92,9 @@ export default function AboutScreen() {
           <Text style={styles.developedByName}>eDOT Solutions</Text>
           <TouchableOpacity onPress={openWebsite} activeOpacity={0.8}>
             <Text style={styles.websiteLink}>www.edot-solutions.com</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={openEmail} activeOpacity={0.8} style={styles.emailContainer}>
+            <Text style={styles.emailLink}>contact@edot-solutions.com</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -157,6 +175,14 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   websiteLink: {
+    color: '#ffffff',
+    textDecorationLine: 'underline',
+    fontSize: 14,
+  },
+  emailContainer: {
+    marginTop: 8,
+  },
+  emailLink: {
     color: '#ffffff',
     textDecorationLine: 'underline',
     fontSize: 14,

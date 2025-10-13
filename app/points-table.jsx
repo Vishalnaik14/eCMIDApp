@@ -124,6 +124,19 @@ export default function PointsTableScreen() {
     }
   };
 
+  const handleActivityPress = (activity) => {
+    // TODO: Navigate to activity detail page or show more info
+    console.log('Activity pressed:', activity.id);
+    // Example: Show alert with activity details
+    // Alert.alert(
+    //   activity.description,
+    //   activity.comments || 'No additional comments',
+    //   [{ text: 'OK' }]
+    // );
+    // Or navigate to detail page:
+    // navigateTo('/activity-detail', { activityId: activity.id });
+  };
+
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       {/* Header */}
@@ -132,7 +145,7 @@ export default function PointsTableScreen() {
           onPress={goBack}
           style={styles.backButton}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          activeOpacity={0.7}
+          activeOpacity={0.5}
         >
           <Ionicons name="chevron-back" size={28} color="#ffffff" />
         </TouchableOpacity>
@@ -159,12 +172,14 @@ export default function PointsTableScreen() {
           </View>
         ) : (
           activities.map((activity, index) => (
-            <View
+            <TouchableOpacity
               key={activity.id}
               style={[
                 styles.activityCard,
                 index === 0 && styles.firstCard
               ]}
+              activeOpacity={0.7}
+              onPress={() => handleActivityPress(activity)}
             >
               <View style={styles.activityContent}>
                 <Text style={styles.activityDescription}>
@@ -182,7 +197,7 @@ export default function PointsTableScreen() {
                   Point{activity.points > 1 ? 's' : ''}
                 </Text>
               </View>
-            </View>
+            </TouchableOpacity>
           ))
         )}
       </ScrollView>

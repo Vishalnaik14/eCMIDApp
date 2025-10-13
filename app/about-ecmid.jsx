@@ -27,8 +27,9 @@ As the commercial arm of the Institute, MSA is able to call on a wide selection 
 
 The MSA is being developed to meet the growing demand from a number of international marine organisations for specialised skills-based training and accreditation schemes. MSA delivers these training solutions at various locations, using specialist tutors and examiners.
 
-For more information visit the website at http://marinesurveyingacademy.com`,
-    helpUrl: 'https://www.marinesurveyingacademy.com',
+For more information visit the website at `,
+    websiteUrl: 'http://marinesurveyingacademy.com',
+    helpUrl: 'http://ecmid.iims.org.uk/ecmidWeb/Public/apphelp.aspx',
     lastUpdated: null,
   });
   
@@ -53,6 +54,7 @@ For more information visit the website at http://marinesurveyingacademy.com`,
       // {
       //   title: "Welcome to the eCMID Continuing Professional Development Programme",
       //   content: "Full content text here...",
+      //   websiteUrl: "http://marinesurveyingacademy.com",
       //   helpUrl: "https://www.marinesurveyingacademy.com",
       //   lastUpdated: "2025-10-11T10:00:00Z"
       // }
@@ -61,6 +63,7 @@ For more information visit the website at http://marinesurveyingacademy.com`,
       // setAboutData({
       //   title: data.title || aboutData.title,
       //   content: data.content || aboutData.content,
+      //   websiteUrl: data.websiteUrl || aboutData.websiteUrl,
       //   helpUrl: data.helpUrl || aboutData.helpUrl,
       //   lastUpdated: data.lastUpdated,
       // });
@@ -71,6 +74,20 @@ For more information visit the website at http://marinesurveyingacademy.com`,
       // Keep using default/cached data
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const openWebsite = async () => {
+    const url = aboutData.websiteUrl;
+    try {
+      const canOpen = await Linking.canOpenURL(url);
+      if (canOpen) {
+        await Linking.openURL(url);
+      } else {
+        console.warn('Cannot open URL:', url);
+      }
+    } catch (e) {
+      console.warn('Failed to open website URL:', e);
     }
   };
 
@@ -140,6 +157,11 @@ For more information visit the website at http://marinesurveyingacademy.com`,
             )}
             <Text style={styles.cardBodyText}>
               {aboutData.content}
+              <TouchableOpacity onPress={openWebsite} activeOpacity={0.7}>
+                <Text style={styles.websiteLink}>
+                  {aboutData.websiteUrl}
+                </Text>
+              </TouchableOpacity>
             </Text>
           </ScrollView>
         )}
@@ -204,7 +226,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   cardHeaderText: {
-    fontSize: 13,
+    fontSize: 14,
     color: '#444444',
     textAlign: 'center',
     fontWeight: '600',
@@ -227,8 +249,15 @@ const styles = StyleSheet.create({
   },
   cardBodyText: {
     color: '#ffffff',
-    fontSize: 12.5,
+    fontSize: 13,
     lineHeight: 18,
+  },
+  websiteLink: {
+    color: '#ffffff',
+    fontSize: 13,
+    lineHeight: 18,
+    textDecorationLine: 'underline',
+    fontWeight: '600',
   },
   loadingContainer: {
     flex: 1,

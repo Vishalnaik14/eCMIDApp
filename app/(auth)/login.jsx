@@ -38,14 +38,34 @@ export default function LoginScreen() {
   const formSizing = getFormSizing();
 
   const handleLogin = async () => {
-    if (!email || !password) {
+    // Basic validation - only check if fields are empty
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
+
+    if (!trimmedEmail || !trimmedPassword) {
       Alert.alert('Error', 'Please enter both email and password');
       return;
     }
+
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const isValidEmailFormat = emailRegex.test(trimmedEmail);
+
+    if (!isValidEmailFormat) {
+      Alert.alert(
+        'Invalid Email',
+        'Please enter a valid email address.',
+        [{ text: 'OK' }]
+      );
+      return;
+    }
+
     setLoading(true);
+    
+    // Simulated API call for testing
     setTimeout(() => {
       setLoading(false);
-      // Temp navigation until backend is wired
+      // Email is valid format, allow login
       router.replace('/home');
     }, 600);
   };
@@ -70,6 +90,7 @@ export default function LoginScreen() {
         style={styles.scrollView}
         contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
         {/* Header */}
         <View style={[styles.headerContainer, { 
@@ -124,9 +145,13 @@ export default function LoginScreen() {
               placeholderTextColor="#999"
               keyboardType="email-address"
               autoCapitalize="none"
+              autoCorrect={false}
+              autoComplete="email"
+              textContentType="emailAddress"
               value={email}
               onChangeText={setEmail}
               editable={!loading}
+              selectTextOnFocus={true}
             />
           </View>
 
@@ -144,9 +169,14 @@ export default function LoginScreen() {
               placeholder="Enter your password"
               placeholderTextColor="#999"
               secureTextEntry={true}
+              autoCapitalize="none"
+              autoCorrect={false}
+              autoComplete="password"
+              textContentType="password"
               value={password}
               onChangeText={setPassword}
               editable={!loading}
+              selectTextOnFocus={true}
             />
           </View>
 
@@ -187,13 +217,13 @@ export default function LoginScreen() {
             marginBottom: responsivePadding(20),
             paddingHorizontal: responsivePadding(20)
           }]}>
-            <TouchableOpacity onPress={() => openLink('https://example.com/terms')}>
+            <TouchableOpacity onPress={() => openLink('https://www.iims.org.uk/knowledge-centre/terms-and-conditions/')}>
               <Text style={[styles.footerLink, { fontSize: responsiveFontSize(12) }]}>
                 Terms & Conditions
               </Text>
             </TouchableOpacity>
             <Text style={[styles.footerSeparator, { fontSize: responsiveFontSize(12) }]}>    </Text>
-            <TouchableOpacity onPress={() => openLink('https://example.com/privacy')}>
+            <TouchableOpacity onPress={() => openLink('https://www.iims.org.uk/knowledge-centre/privacy-policy/')}>
               <Text style={[styles.footerLink, { fontSize: responsiveFontSize(12) }]}>
                 Privacy Policy
               </Text>

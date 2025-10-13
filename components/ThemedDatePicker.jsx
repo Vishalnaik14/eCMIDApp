@@ -3,32 +3,42 @@ import { StyleSheet, TouchableOpacity, View, Modal, ScrollView } from 'react-nat
 import ThemedView from './ThemedView'
 import ThemedText from './ThemedText'
 
-const ThemedDatePicker = ({ value, onDateChange, label = "Date of Birth" }) => {
+const ThemedDatePicker = ({ value, onDateChange, label = "Date" }) => {
   const [show, setShow] = useState(false)
   const [showYearPicker, setShowYearPicker] = useState(false)
   const [showMonthPicker, setShowMonthPicker] = useState(false)
-  const [currentMonth, setCurrentMonth] = useState(value ? new Date(value) : new Date())
-  const [selectedDate, setSelectedDate] = useState(value)
+  const [currentMonth, setCurrentMonth] = useState(new Date())
+  const [selectedDate, setSelectedDate] = useState(null)
 
-  // Add useEffect to sync with prop changes
+  // Sync with prop changes - CRITICAL for reset functionality
   useEffect(() => {
-    if (value === null) {
+    if (value === null || value === undefined) {
       setSelectedDate(null)
       setCurrentMonth(new Date())
     } else if (value) {
-      setSelectedDate(value)
-      setCurrentMonth(new Date(value))
+      const dateObj = new Date(value)
+      if (!isNaN(dateObj.getTime())) {
+        setSelectedDate(dateObj)
+        setCurrentMonth(new Date(dateObj))
+      }
     }
   }, [value])
 
   const formatDate = (date) => {
-    if (!date) return 'Select Date'
+    if (!date || date === null || date === undefined) return 'Select Date'
     
-    const day = date.getDate().toString().padStart(2, '0')
-    const month = (date.getMonth() + 1).toString().padStart(2, '0')
-    const year = date.getFullYear()
-    
-    return `${day}/${month}/${year}`
+    try {
+      const dateObj = new Date(date)
+      if (isNaN(dateObj.getTime())) return 'Select Date'
+      
+      const day = dateObj.getDate().toString().padStart(2, '0')
+      const month = (dateObj.getMonth() + 1).toString().padStart(2, '0')
+      const year = dateObj.getFullYear()
+      
+      return `${day}/${month}/${year}`
+    } catch (error) {
+      return 'Select Date'
+    }
   }
 
   const monthNames = [
@@ -38,7 +48,6 @@ const ThemedDatePicker = ({ value, onDateChange, label = "Date of Birth" }) => {
 
   const dayNames = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
 
-  // Generate years from 1900 to current year (reasonable birth date range)
   const generateYears = () => {
     const currentYear = new Date().getFullYear()
     const years = []
@@ -63,7 +72,6 @@ const ThemedDatePicker = ({ value, onDateChange, label = "Date of Birth" }) => {
     const { daysInMonth, startingDayOfWeek } = getDaysInMonth(currentMonth)
     const days = []
     
-    // Previous month's days
     const prevMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 0)
     const prevMonthDays = prevMonth.getDate()
     
@@ -75,7 +83,6 @@ const ThemedDatePicker = ({ value, onDateChange, label = "Date of Birth" }) => {
       })
     }
     
-    // Current month's days
     for (let i = 1; i <= daysInMonth; i++) {
       days.push({
         day: i,
@@ -84,8 +91,7 @@ const ThemedDatePicker = ({ value, onDateChange, label = "Date of Birth" }) => {
       })
     }
     
-    // Next month's days
-    const remainingDays = 42 - days.length // 6 rows * 7 days
+    const remainingDays = 42 - days.length
     for (let i = 1; i <= remainingDays; i++) {
       days.push({
         day: i,
@@ -105,7 +111,6 @@ const ThemedDatePicker = ({ value, onDateChange, label = "Date of Birth" }) => {
     const nextMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1)
     const today = new Date()
     
-    // Only allow navigation if next month doesn't exceed current date
     if (nextMonth <= today) {
       setCurrentMonth(nextMonth)
     }
@@ -115,9 +120,7 @@ const ThemedDatePicker = ({ value, onDateChange, label = "Date of Birth" }) => {
     const newDate = new Date(year, currentMonth.getMonth(), 1)
     const today = new Date()
     
-    // Validate: ensure the new date doesn't exceed today
     if (newDate > today) {
-      // If selecting current year, adjust to current month if needed
       if (year === today.getFullYear() && currentMonth.getMonth() > today.getMonth()) {
         setCurrentMonth(new Date(year, today.getMonth(), 1))
       } else {
@@ -134,9 +137,8 @@ const ThemedDatePicker = ({ value, onDateChange, label = "Date of Birth" }) => {
     const newDate = new Date(currentMonth.getFullYear(), monthIndex, 1)
     const today = new Date()
     
-    // Validate: ensure the new month doesn't exceed today's date
     if (newDate > today) {
-      return // Don't allow selection of future months
+      return
     }
     
     setCurrentMonth(newDate)
@@ -144,33 +146,43 @@ const ThemedDatePicker = ({ value, onDateChange, label = "Date of Birth" }) => {
   }
 
   const handleDateSelect = (dateObj) => {
+    // CRITICAL: Only allow selection of dates from the current month
+    if (!dateObj.isCurrentMonth) {
+      return
+    }
+
     const today = new Date()
     today.setHours(0, 0, 0, 0)
     const selectedDateObj = new Date(dateObj.date)
     selectedDateObj.setHours(0, 0, 0, 0)
     
-    // Validation 1: Don't allow future dates
+    // Don't allow future dates
     if (selectedDateObj > today) {
       return
     }
     
-    // Validation 2: Reasonable birth date (not more than 150 years ago)
+    // Don't allow dates more than 150 years old
     const minDate = new Date()
     minDate.setFullYear(minDate.getFullYear() - 150)
     if (selectedDateObj < minDate) {
-      alert('Please select a valid birth date')
       return
     }
     
-    setSelectedDate(dateObj.date)
+    // IMPORTANT: Don't update local state here - let the parent control it
+    // This prevents showing invalid dates before validation
     onDateChange(dateObj.date)
     setShow(false)
   }
 
-  const isDateDisabled = (date) => {
+  const isDateDisabled = (dateObj) => {
+    // Disable dates from other months
+    if (!dateObj.isCurrentMonth) {
+      return true
+    }
+
     const today = new Date()
     today.setHours(0, 0, 0, 0)
-    const checkDate = new Date(date)
+    const checkDate = new Date(dateObj.date)
     checkDate.setHours(0, 0, 0, 0)
     
     // Disable future dates
@@ -187,16 +199,19 @@ const ThemedDatePicker = ({ value, onDateChange, label = "Date of Birth" }) => {
   const isMonthDisabled = (monthIndex) => {
     const testDate = new Date(currentMonth.getFullYear(), monthIndex, 1)
     const today = new Date()
-    
-    // Disable if the month is in the future
     return testDate > today
   }
 
   const isDateSelected = (date) => {
-    if (!selectedDate) return false
-    const selected = new Date(selectedDate)
-    const check = new Date(date)
-    return selected.toDateString() === check.toDateString()
+    if (!selectedDate || selectedDate === null || selectedDate === undefined) return false
+    try {
+      const selected = new Date(selectedDate)
+      const check = new Date(date)
+      if (isNaN(selected.getTime()) || isNaN(check.getTime())) return false
+      return selected.toDateString() === check.toDateString()
+    } catch (error) {
+      return false
+    }
   }
 
   const isToday = (date) => {
@@ -213,7 +228,7 @@ const ThemedDatePicker = ({ value, onDateChange, label = "Date of Birth" }) => {
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedText style={styles.label}>{label}:</ThemedText>
+      <ThemedText style={styles.label}>{label}</ThemedText>
       
       <TouchableOpacity 
         style={styles.dateButton} 
@@ -221,7 +236,7 @@ const ThemedDatePicker = ({ value, onDateChange, label = "Date of Birth" }) => {
         activeOpacity={0.7}
       >
         <ThemedText style={styles.dateText}>
-          {selectedDate ? formatDate(selectedDate) : 'Select Date'}
+          {formatDate(selectedDate)}
         </ThemedText>
       </TouchableOpacity>
 
@@ -238,7 +253,6 @@ const ThemedDatePicker = ({ value, onDateChange, label = "Date of Birth" }) => {
         >
           <TouchableOpacity activeOpacity={1} onPress={(e) => e.stopPropagation()}>
             <View style={styles.calendarContainer}>
-              {/* Header with clickable month and year */}
               <View style={styles.header}>
                 <TouchableOpacity onPress={() => setShowMonthPicker(true)}>
                   <ThemedText style={styles.monthYearClickable}>
@@ -264,7 +278,6 @@ const ThemedDatePicker = ({ value, onDateChange, label = "Date of Birth" }) => {
                 </View>
               </View>
 
-              {/* Year Picker Modal */}
               {showYearPicker && (
                 <View style={styles.pickerOverlay}>
                   <View style={styles.pickerHeader}>
@@ -295,7 +308,6 @@ const ThemedDatePicker = ({ value, onDateChange, label = "Date of Birth" }) => {
                 </View>
               )}
 
-              {/* Month Picker Modal */}
               {showMonthPicker && (
                 <View style={styles.pickerOverlay}>
                   <View style={styles.pickerHeader}>
@@ -332,7 +344,6 @@ const ThemedDatePicker = ({ value, onDateChange, label = "Date of Birth" }) => {
                 </View>
               )}
 
-              {/* Day names */}
               <View style={styles.dayNamesRow}>
                 {dayNames.map((day, index) => (
                   <View key={index} style={styles.dayNameCell}>
@@ -341,10 +352,9 @@ const ThemedDatePicker = ({ value, onDateChange, label = "Date of Birth" }) => {
                 ))}
               </View>
 
-              {/* Calendar grid */}
               <View style={styles.calendarGrid}>
                 {generateCalendarDays().map((dateObj, index) => {
-                  const disabled = isDateDisabled(dateObj.date)
+                  const disabled = isDateDisabled(dateObj)
                   const selected = isDateSelected(dateObj.date)
                   const todayDate = isToday(dateObj.date)
 
@@ -375,7 +385,6 @@ const ThemedDatePicker = ({ value, onDateChange, label = "Date of Birth" }) => {
                 })}
               </View>
 
-              {/* Close button */}
               <TouchableOpacity 
                 style={styles.closeButton}
                 onPress={() => setShow(false)}

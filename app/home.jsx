@@ -93,7 +93,7 @@ export default function HomeScreen() {
 
   const tiles = [
     { key: 'claim', label: 'Claim Points', icon: 'gift-outline', onPress: () => navigateTo('/claim-points') },
-    { key: 'activity', label: 'My Activity', icon: 'document-text-outline', onPress: () => {} },
+    { key: 'activity', label: 'My Activity', icon: 'document-text-outline', onPress: () => navigateTo('/activity') },
     { key: 'points-table', label: 'Points Table', icon: 'calendar-outline', onPress: () => navigateTo('/points-table') },
     { key: 'about-ecmid', label: 'About eCMID', icon: 'reader-outline', isImage: true, onPress: () => navigateTo('/about-ecmid') },
     { key: 'about-app', label: 'About App', icon: 'information-outline', onPress: () => navigateTo('/about') },

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,23 +7,77 @@ import {
   Image,
   Platform,
   Dimensions,
+  StatusBar,
+  ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '../hooks/useNavigation';
 import ThemedButton from '../components/ThemedButton';
+// import { apiService } from '../services/api'; // Uncomment when integrating backend
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+
+// Responsive font sizing
+const getFontSize = (baseSize) => {
+  const scale = SCREEN_WIDTH / 375; // iPhone 11 Pro as base
+  const newSize = baseSize * scale;
+  return Math.round(newSize);
+};
 
 export default function ScoreScreen() {
   const { goBack, navigateTo } = useNavigation();
   const insets = useSafeAreaInsets();
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Dynamic user data state
+  const [userData, setUserData] = useState({
+    userName: 'Vishal Naik', // Will be dynamic from database
+    companyName: 'EDOT Solutions', // Will be dynamic from database
+    currentScore: 0,
+    targetScore: 10,
+    scoreStartDate: '8 July 2025',
+  });
+  const [isLoadingData, setIsLoadingData] = useState(false);
+
+  // Fetch user data on component mount
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
+  const fetchUserData = async () => {
+    setIsLoadingData(true);
+    try {
+      // TODO: Replace with actual API call when backend is ready
+      // const data = await apiService.getUserScore();
+      // setUserData({
+      //   userName: data.userName || 'User Name',
+      //   companyName: data.companyName || 'Company Name',
+      //   currentScore: data.score || 0,
+      //   targetScore: data.targetScore || 10,
+      //   scoreStartDate: data.startDate || new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }),
+      // });
+
+      // Mock data for now (remove when backend is connected)
+      await new Promise(resolve => setTimeout(resolve, 500));
+      setUserData({
+        userName: 'Vishal Naik',
+        companyName: 'EDOT Solutions',
+        currentScore: 0,
+        targetScore: 10,
+        scoreStartDate: '8 July 2025',
+      });
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      // Keep default values on error
+    } finally {
+      setIsLoadingData(false);
+    }
+  };
 
   const handleGetMorePoints = useCallback(async () => {
     setIsLoading(true);
     try {
-      // Simulate API call or navigation
       await new Promise(resolve => setTimeout(resolve, 1000));
       navigateTo('/claim-points');
     } catch (error) {
@@ -37,19 +91,48 @@ export default function ScoreScreen() {
     goBack();
   }, [goBack]);
 
+  // Calculate header height (now taller to accommodate two lines)
+  const headerHeight = 72;
+  const buttonContainerHeight = 72 + Math.max(insets.bottom, 16);
+  
+  // Available height for content sections
+  const availableHeight = SCREEN_HEIGHT - insets.top - headerHeight - buttonContainerHeight;
+  const sectionHeight = availableHeight / 2;
+
   return (
-    <View style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
-      {/* Header */}
-      <View style={styles.header}>
+    <View style={styles.container}>
+      <StatusBar 
+        barStyle="light-content" 
+        backgroundColor="#1e9fd8"
+        translucent={false}
+      />
+      
+      {/* Header with User Name and Company */}
+      <View style={[styles.header, { paddingTop: insets.top }]}>
         <TouchableOpacity 
           onPress={handleBack} 
           style={styles.backButton}
           activeOpacity={0.7}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Ionicons name="chevron-back" size={24} color="#ffffff" />
+          <Ionicons name="chevron-back" size={28} color="#ffffff" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Aldrige EDOT Solutions</Text>
+        
+        <View style={styles.headerTextContainer}>
+          {isLoadingData ? (
+            <ActivityIndicator size="small" color="#ffffff" />
+          ) : (
+            <>
+              <Text style={styles.headerUserName} numberOfLines={1}>
+                {userData.userName}
+              </Text>
+              <Text style={styles.headerCompanyName} numberOfLines={1}>
+                {userData.companyName}
+              </Text>
+            </>
+          )}
+        </View>
+        
         <View style={styles.headerRight}>
           <Image
             source={require('../assets/img/ecmidlogoblack.png')}
@@ -59,26 +142,44 @@ export default function ScoreScreen() {
         </View>
       </View>
 
-      {/* Main Content */}
+      {/* Main Content - Two equal sections */}
       <View style={styles.content}>
         {/* Top Section - Current Score */}
-        <View style={styles.scoreSection}>
-          <Text style={styles.scoreNumber}>0</Text>
-          <Text style={styles.scoreLabel}>Your Score</Text>
-          <Text style={styles.scoreDate}>8 July 2025 - Today</Text>
+        <View style={[styles.scoreSection, { height: sectionHeight }]}>
+          <View style={styles.sectionContent}>
+            <Text style={[styles.scoreNumber, { fontSize: getFontSize(72) }]}>
+              {userData.currentScore}
+            </Text>
+            <Text style={[styles.scoreLabel, { fontSize: getFontSize(18) }]}>
+              Your Score
+            </Text>
+            <Text style={[styles.scoreDate, { fontSize: getFontSize(14) }]}>
+              {userData.scoreStartDate} - Today
+            </Text>
+          </View>
         </View>
 
         {/* Bottom Section - Required Points */}
-        <View style={styles.targetSection}>
-          <Text style={styles.targetText}>
-            Points required to meet your target for the current accreditation year
-          </Text>
-          <Text style={styles.targetNumber}>10</Text>
+        <View style={[styles.targetSection, { height: sectionHeight }]}>
+          <View style={styles.sectionContent}>
+            <Text style={[styles.targetText, { fontSize: getFontSize(16) }]}>
+              Points required to meet your target for the current accreditation year
+            </Text>
+            <Text style={[styles.targetNumber, { fontSize: getFontSize(64) }]}>
+              {userData.targetScore}
+            </Text>
+          </View>
         </View>
       </View>
 
       {/* Bottom Button */}
-      <View style={[styles.buttonContainer, { paddingBottom: Math.max(insets.bottom, 16) }]}>
+      <View style={[
+        styles.buttonContainer, 
+        { 
+          paddingBottom: Math.max(insets.bottom, 16),
+          paddingTop: 12
+        }
+      ]}>
         <ThemedButton
           title="GET MORE POINTS!!"
           onPress={handleGetMorePoints}
@@ -102,9 +203,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingBottom: 12,
     backgroundColor: '#1e9fd8',
-    minHeight: 56,
+    minHeight: 72,
   },
   backButton: {
     padding: 8,
@@ -112,83 +213,124 @@ const styles = StyleSheet.create({
     minHeight: 44,
     justifyContent: 'center',
     alignItems: 'center',
+    marginLeft: -8,
   },
-  headerTitle: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '600',
+  headerTextContainer: {
     flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 8,
+    minHeight: 50,
+  },
+  headerUserName: {
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: '700',
     textAlign: 'center',
-    marginHorizontal: 8,
+    marginBottom: 2,
+    ...Platform.select({
+      ios: {
+        fontWeight: '700',
+      },
+      android: {
+        fontWeight: 'bold',
+      },
+    }),
+  },
+  headerCompanyName: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: '400',
+    textAlign: 'center',
+    opacity: 0.9,
   },
   headerRight: {
-    width: 40,
+    width: 44,
+    height: 44,
     alignItems: 'flex-end',
+    justifyContent: 'center',
   },
   headerLogo: {
-    width: 48,
-    height: 48,
+    width: 44,
+    height: 44,
   },
   content: {
     flex: 1,
-    paddingHorizontal: 0,
-    minHeight: 0,
   },
   scoreSection: {
-    flex: 1,
     backgroundColor: '#347a8c',
+    width: '100%',
+  },
+  targetSection: {
+    backgroundColor: '#ffffff',
+    width: '100%',
+  },
+  sectionContent: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 20,
-    paddingVertical: 30,
-    minHeight: SCREEN_HEIGHT * 0.3,
+    paddingVertical: 20,
   },
   scoreNumber: {
-    fontSize: Math.min(72, SCREEN_WIDTH * 0.18),
     fontWeight: 'bold',
     color: '#ffffff',
     marginBottom: 8,
+    ...Platform.select({
+      ios: {
+        fontWeight: '700',
+      },
+      android: {
+        fontWeight: 'bold',
+      },
+      default: {
+        fontWeight: 'bold',
+      }
+    }),
   },
   scoreLabel: {
-    fontSize: Math.min(18, SCREEN_WIDTH * 0.045),
     color: '#ffffff',
     marginBottom: 4,
     fontWeight: '500',
   },
   scoreDate: {
-    fontSize: Math.min(14, SCREEN_WIDTH * 0.035),
     color: '#ffffff',
     opacity: 0.9,
-  },
-  targetSection: {
-    flex: 1,
-    backgroundColor: '#ffffff',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 30,
-    minHeight: SCREEN_HEIGHT * 0.3,
+    marginTop: 4,
   },
   targetText: {
-    fontSize: Math.min(16, SCREEN_WIDTH * 0.04),
     color: '#333333',
     textAlign: 'center',
-    lineHeight: 22,
+    lineHeight: 24,
     marginBottom: 20,
-    paddingHorizontal: 10,
-    maxWidth: 500,
+    paddingHorizontal: 20,
+    maxWidth: Platform.select({
+      web: 500,
+      default: SCREEN_WIDTH - 40,
+    }),
   },
   targetNumber: {
-    fontSize: Math.min(64, SCREEN_WIDTH * 0.16),
     fontWeight: 'bold',
     color: '#333333',
+    marginTop: 8,
+    ...Platform.select({
+      ios: {
+        fontWeight: '700',
+      },
+      android: {
+        fontWeight: 'bold',
+      },
+      default: {
+        fontWeight: 'bold',
+      }
+    }),
   },
   buttonContainer: {
     paddingHorizontal: 16,
-    paddingTop: 12,
     backgroundColor: '#1e9fd8',
   },
   getPointsButton: {
     letterSpacing: 1,
+    minHeight: 48,
   },
 });

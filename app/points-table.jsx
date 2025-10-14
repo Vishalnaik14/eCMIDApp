@@ -78,14 +78,14 @@ export default function PointsTableScreen() {
         {
           id: '5',
           description: 'Researching a relevant technical subject, seeking advice on technical helplines or viewing relevant online videos',
-          comments: '',
+          comments: 'Maximum two per year permitted',
           points: 2,
           displayInApp: true,
         },
         {
           id: '6',
           description: 'Purchase of an IIMS handy guide',
-          comments: '',
+          comments: 'Maximum two per year permitted',
           points: 2,
           displayInApp: true,
         },

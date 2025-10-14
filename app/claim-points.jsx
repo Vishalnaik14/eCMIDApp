@@ -11,6 +11,8 @@ import {
   Alert,
   ActivityIndicator,
   Dimensions,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -169,7 +171,7 @@ export default function ClaimPointsScreen() {
   const handleStartDateChange = (date) => {
     // If end date exists and new start date is after end date, reset both dates
     if (endDate && date && new Date(date) > new Date(endDate)) {
-      Alert.alert('Invalid Date', 'Start date cannot be after end date. Both dates have been reset. Please select valid dates.');
+      Alert.alert('Invalid Date', 'Start date cannot be after end date. Please select valid dates.');
       setStartDate(null);
       setEndDate(null);
       return;
@@ -180,7 +182,7 @@ export default function ClaimPointsScreen() {
   const handleEndDateChange = (date) => {
     // If start date exists and new end date is before start date, reset both dates
     if (startDate && date && new Date(date) < new Date(startDate)) {
-      Alert.alert('Invalid Date', 'End date cannot be before start date. Both dates have been reset. Please select valid dates.');
+      Alert.alert('Invalid Date', 'End date cannot be before start date. Please select valid dates.');
       setStartDate(null);
       setEndDate(null);
       return;
@@ -257,7 +259,11 @@ export default function ClaimPointsScreen() {
   }
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
+    <KeyboardAvoidingView 
+      style={[styles.container, { paddingTop: insets.top }]}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+    >
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => { handleReset(); setShowActivityList(true); setSelectedActivity(null); }}
@@ -266,14 +272,12 @@ export default function ClaimPointsScreen() {
           <Ionicons name="chevron-back" size={28} color="#ffffff" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Claim Your Points</Text>
-        <Image
-          source={require('../assets/img/ecmidlogoblack.png')}
-          style={styles.headerLogo}
-          resizeMode="contain"
-        />
       </View>
 
-      <ScrollView contentContainerStyle={styles.formContent}>
+      <ScrollView 
+        contentContainerStyle={styles.formContent}
+        keyboardShouldPersistTaps="handled"
+      >
         {/* Selected Activity */}
         <View style={styles.selectedActivityBanner}>
           <Text style={styles.activityDescription}>{selectedActivity?.description}</Text>
@@ -415,7 +419,7 @@ export default function ClaimPointsScreen() {
           </View>
         </View>
       </Modal>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -492,6 +496,7 @@ const styles = StyleSheet.create({
   },
   formContent: {
     padding: 16,
+    paddingBottom: 40,
   },
   selectedActivityBanner: {
     backgroundColor: '#fff',

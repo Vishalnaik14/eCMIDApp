@@ -10,6 +10,8 @@ import {
   Alert,
   ActivityIndicator,
   ImageBackground,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useUser } from '../../hooks/useUser';
@@ -23,9 +25,27 @@ export default function ForgotPasswordScreen() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // Email validation function
+  const validateEmail = (email) => {
+    const trimmedEmail = email.trim();
+    
+    if (!trimmedEmail) {
+      return false;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(trimmedEmail);
+  };
+
   const handleResetPassword = async () => {
-    if (!email) {
+    // Validate email
+    if (!email.trim()) {
       Alert.alert('Error', 'Please enter your email address');
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      Alert.alert('Error', 'Please enter a valid email address');
       return;
     }
 
@@ -34,19 +54,19 @@ export default function ForgotPasswordScreen() {
       return;
     }
 
-    if (newPassword !== confirmPassword) {
-      Alert.alert('Error', 'Passwords do not match');
-      return;
-    }
-
     if (newPassword.length < 8) {
       Alert.alert('Error', 'Password must be at least 8 characters long');
       return;
     }
 
+    if (newPassword !== confirmPassword) {
+      Alert.alert('Error', 'Passwords do not match');
+      return;
+    }
+
     setLoading(true);
     try {
-      await sendPasswordResetEmail(email);
+      await sendPasswordResetEmail(email.trim());
       Alert.alert(
         'Success',
         'Password has been reset successfully!',
@@ -88,78 +108,90 @@ export default function ForgotPasswordScreen() {
         />
       </View>
 
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.contentContainer}
-        showsVerticalScrollIndicator={false}
+      <KeyboardAvoidingView
+        style={styles.keyboardAvoidingView}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
       >
-        {/* Instructions */}
-        <View style={styles.instructionsContainer}>
-          <Text style={styles.instructionsText}>
-            Enter your details to reset password
-          </Text>
-        </View>
-
-        {/* Form Container */}
-        <View style={styles.formContainer}>
-          {/* Email Input */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Email Address</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter your email"
-              placeholderTextColor="rgba(255, 255, 255, 0.5)"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              value={email}
-              onChangeText={setEmail}
-              editable={!loading}
-            />
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.contentContainer}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          {/* Instructions */}
+          <View style={styles.instructionsContainer}>
+            <Text style={styles.instructionsText}>
+              Enter your details to reset password
+            </Text>
           </View>
 
-          {/* New Password Input */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Enter Password</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter new password"
-              placeholderTextColor="rgba(255, 255, 255, 0.5)"
-              secureTextEntry={true}
-              value={newPassword}
-              onChangeText={setNewPassword}
-              editable={!loading}
-            />
-          </View>
+          {/* Form Container */}
+          <View style={styles.formContainer}>
+            {/* Email Input */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Email Address</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter your email"
+                placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+                value={email}
+                onChangeText={setEmail}
+                editable={!loading}
+              />
+            </View>
 
-          {/* Confirm Password Input */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Confirm Password</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Confirm new password"
-              placeholderTextColor="rgba(255, 255, 255, 0.5)"
-              secureTextEntry={true}
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              editable={!loading}
-            />
-          </View>
+            {/* New Password Input */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Enter Password</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter new password"
+                placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                secureTextEntry={true}
+                autoCapitalize="none"
+                autoCorrect={false}
+                value={newPassword}
+                onChangeText={setNewPassword}
+                editable={!loading}
+              />
+            </View>
 
-          {/* Reset Password Button */}
-          <TouchableOpacity
-            style={[styles.resetButton, loading && styles.resetButtonDisabled]}
-            onPress={handleResetPassword}
-            activeOpacity={0.8}
-            disabled={loading}
-          >
-            {loading ? (
-              <ActivityIndicator color="#ffffff" />
-            ) : (
-              <Text style={styles.resetButtonText}>RESET PASSWORD</Text>
-            )}
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+            {/* Confirm Password Input */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Confirm Password</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Confirm new password"
+                placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                secureTextEntry={true}
+                autoCapitalize="none"
+                autoCorrect={false}
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                editable={!loading}
+              />
+            </View>
+
+            {/* Reset Password Button */}
+            <TouchableOpacity
+              style={[styles.resetButton, loading && styles.resetButtonDisabled]}
+              onPress={handleResetPassword}
+              activeOpacity={0.8}
+              disabled={loading}
+            >
+              {loading ? (
+                <ActivityIndicator color="#ffffff" />
+              ) : (
+                <Text style={styles.resetButtonText}>RESET PASSWORD</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </ImageBackground>
   );
 }
@@ -194,12 +226,16 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
   },
+  keyboardAvoidingView: {
+    flex: 1,
+  },
   scrollView: {
     flex: 1,
   },
   contentContainer: {
     paddingTop: 40,
     paddingHorizontal: 20,
+    paddingBottom: Platform.OS === 'android' ? 100 : 40,
   },
   instructionsContainer: {
     marginBottom: 40,

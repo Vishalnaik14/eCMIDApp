@@ -14,15 +14,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '../hooks/useNavigation';
 import ThemedButton from '../components/ThemedButton';
-// import { apiService } from '../services/api'; // Uncomment when integrating backend
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 // Responsive font sizing
 const getFontSize = (baseSize) => {
-  const scale = SCREEN_WIDTH / 375; // iPhone 11 Pro as base
+  const scale = SCREEN_WIDTH / 375;
   const newSize = baseSize * scale;
-  return Math.round(newSize);
+  return Math.round(Math.min(Math.max(newSize, baseSize * 0.8), baseSize * 1.2));
 };
 
 export default function ScoreScreen() {
@@ -32,8 +31,8 @@ export default function ScoreScreen() {
   
   // Dynamic user data state
   const [userData, setUserData] = useState({
-    userName: 'Vishal Naik', // Will be dynamic from database
-    companyName: 'EDOT Solutions', // Will be dynamic from database
+    userName: 'Vishal Naik',
+    companyName: 'EDOT Solutions',
     currentScore: 0,
     targetScore: 10,
     scoreStartDate: '8 July 2025',
@@ -49,16 +48,6 @@ export default function ScoreScreen() {
     setIsLoadingData(true);
     try {
       // TODO: Replace with actual API call when backend is ready
-      // const data = await apiService.getUserScore();
-      // setUserData({
-      //   userName: data.userName || 'User Name',
-      //   companyName: data.companyName || 'Company Name',
-      //   currentScore: data.score || 0,
-      //   targetScore: data.targetScore || 10,
-      //   scoreStartDate: data.startDate || new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }),
-      // });
-
-      // Mock data for now (remove when backend is connected)
       await new Promise(resolve => setTimeout(resolve, 500));
       setUserData({
         userName: 'Vishal Naik',
@@ -69,7 +58,6 @@ export default function ScoreScreen() {
       });
     } catch (error) {
       console.error('Error fetching user data:', error);
-      // Keep default values on error
     } finally {
       setIsLoadingData(false);
     }
@@ -91,16 +79,8 @@ export default function ScoreScreen() {
     goBack();
   }, [goBack]);
 
-  // Calculate header height (now taller to accommodate two lines)
-  const headerHeight = 72;
-  const buttonContainerHeight = 72 + Math.max(insets.bottom, 16);
-  
-  // Available height for content sections
-  const availableHeight = SCREEN_HEIGHT - insets.top - headerHeight - buttonContainerHeight;
-  const sectionHeight = availableHeight / 2;
-
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       <StatusBar 
         barStyle="light-content" 
         backgroundColor="#1e9fd8"
@@ -108,7 +88,7 @@ export default function ScoreScreen() {
       />
       
       {/* Header with User Name and Company */}
-      <View style={[styles.header, { paddingTop: insets.top }]}>
+      <View style={styles.header}>
         <TouchableOpacity 
           onPress={handleBack} 
           style={styles.backButton}
@@ -145,7 +125,7 @@ export default function ScoreScreen() {
       {/* Main Content - Two equal sections */}
       <View style={styles.content}>
         {/* Top Section - Current Score */}
-        <View style={[styles.scoreSection, { height: sectionHeight }]}>
+        <View style={styles.scoreSection}>
           <View style={styles.sectionContent}>
             <Text style={[styles.scoreNumber, { fontSize: getFontSize(72) }]}>
               {userData.currentScore}
@@ -160,7 +140,7 @@ export default function ScoreScreen() {
         </View>
 
         {/* Bottom Section - Required Points */}
-        <View style={[styles.targetSection, { height: sectionHeight }]}>
+        <View style={styles.targetSection}>
           <View style={styles.sectionContent}>
             <Text style={[styles.targetText, { fontSize: getFontSize(16) }]}>
               Points required to meet your target for the current accreditation year
@@ -175,10 +155,7 @@ export default function ScoreScreen() {
       {/* Bottom Button */}
       <View style={[
         styles.buttonContainer, 
-        { 
-          paddingBottom: Math.max(insets.bottom, 16),
-          paddingTop: 12
-        }
+        { paddingBottom: Math.max(insets.bottom, 16) }
       ]}>
         <ThemedButton
           title="GET MORE POINTS!!"
@@ -203,9 +180,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingBottom: 12,
+    paddingVertical: 12,
     backgroundColor: '#1e9fd8',
-    minHeight: 72,
+    minHeight: 60,
   },
   backButton: {
     padding: 8,
@@ -220,7 +197,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 8,
-    minHeight: 50,
+    minHeight: 44,
   },
   headerUserName: {
     color: '#ffffff',
@@ -228,14 +205,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     textAlign: 'center',
     marginBottom: 2,
-    ...Platform.select({
-      ios: {
-        fontWeight: '700',
-      },
-      android: {
-        fontWeight: 'bold',
-      },
-    }),
   },
   headerCompanyName: {
     color: '#ffffff',
@@ -256,14 +225,19 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+    minHeight: 0,
   },
   scoreSection: {
+    flex: 1,
     backgroundColor: '#347a8c',
     width: '100%',
+    minHeight: 0,
   },
   targetSection: {
+    flex: 1,
     backgroundColor: '#ffffff',
     width: '100%',
+    minHeight: 0,
   },
   sectionContent: {
     flex: 1,
@@ -273,20 +247,13 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   scoreNumber: {
-    fontWeight: 'bold',
+    fontWeight: Platform.select({
+      ios: '700',
+      android: 'bold',
+      default: 'bold',
+    }),
     color: '#ffffff',
     marginBottom: 8,
-    ...Platform.select({
-      ios: {
-        fontWeight: '700',
-      },
-      android: {
-        fontWeight: 'bold',
-      },
-      default: {
-        fontWeight: 'bold',
-      }
-    }),
   },
   scoreLabel: {
     color: '#ffffff',
@@ -310,23 +277,17 @@ const styles = StyleSheet.create({
     }),
   },
   targetNumber: {
-    fontWeight: 'bold',
+    fontWeight: Platform.select({
+      ios: '700',
+      android: 'bold',
+      default: 'bold',
+    }),
     color: '#333333',
     marginTop: 8,
-    ...Platform.select({
-      ios: {
-        fontWeight: '700',
-      },
-      android: {
-        fontWeight: 'bold',
-      },
-      default: {
-        fontWeight: 'bold',
-      }
-    }),
   },
   buttonContainer: {
     paddingHorizontal: 16,
+    paddingTop: 12,
     backgroundColor: '#1e9fd8',
   },
   getPointsButton: {

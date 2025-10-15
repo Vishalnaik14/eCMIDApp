@@ -10,6 +10,8 @@ import {
   Linking,
   Alert,
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -86,151 +88,157 @@ export default function LoginScreen() {
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.contentContainer}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
+      <KeyboardAvoidingView
+        style={styles.keyboardAvoidingView}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
       >
-        {/* Header */}
-        <View style={[styles.headerContainer, { 
-          paddingVertical: responsivePadding(20),
-          minHeight: responsiveHeight(80)
-        }]}>
-          <Text style={[styles.signInText, { fontSize: responsiveFontSize(24) }]}>
-            Sign in
-          </Text>
-        </View>
-
-        {/* Logos */}
-        <View style={[styles.logosContainer, { 
-          marginBottom: responsivePadding(40),
-          paddingHorizontal: responsivePadding(20)
-        }]}>
-          <Image
-            source={require('../../assets/img/ecmidlogoblack.png')}
-            style={[styles.ecmidLogo, { 
-              width: responsiveWidth(110), 
-              height: responsiveHeight(110) 
-            }]}
-            resizeMode="contain"
-          />
-          <Image
-            source={require('../../assets/img/logo_iims.png')}
-            style={[styles.airlineLogo, { 
-              width: responsiveWidth(110), 
-              height: responsiveHeight(90) 
-            }]}
-            resizeMode="contain"
-          />
-        </View>
-
-        {/* Form Container */}
-        <View style={[styles.formContainer, { 
-          paddingHorizontal: formSizing.padding,
-          marginBottom: responsivePadding(30)
-        }]}>
-          {/* Email Input */}
-          <View style={[styles.inputGroup, { marginBottom: responsivePadding(20) }]}>
-            <Text style={[styles.label, { fontSize: responsiveFontSize(14) }]}>
-              Email Address
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.contentContainer}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          {/* Header */}
+          <View style={[styles.headerContainer, { 
+            paddingVertical: responsivePadding(20),
+            minHeight: responsiveHeight(80)
+          }]}>
+            <Text style={[styles.signInText, { fontSize: responsiveFontSize(24) }]}>
+              Sign in
             </Text>
-            <TextInput
-              style={[styles.input, { 
-                height: formSizing.inputHeight,
-                fontSize: formSizing.fontSize,
-                borderRadius: formSizing.borderRadius
-              }]}
-              placeholder="Enter your email"
-              placeholderTextColor="#999"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoCorrect={false}
-              autoComplete="email"
-              textContentType="emailAddress"
-              value={email}
-              onChangeText={setEmail}
-              editable={!loading}
-              selectTextOnFocus={true}
-            />
           </View>
 
-          {/* Password Input */}
-          <View style={[styles.inputGroup, { marginBottom: responsivePadding(20) }]}>
-            <Text style={[styles.label, { fontSize: responsiveFontSize(14) }]}>
-              Password
-            </Text>
-            <TextInput
-              style={[styles.input, { 
-                height: formSizing.inputHeight,
-                fontSize: formSizing.fontSize,
-                borderRadius: formSizing.borderRadius
-              }]}
-              placeholder="Enter your password"
-              placeholderTextColor="#999"
-              secureTextEntry={true}
-              autoCapitalize="none"
-              autoCorrect={false}
-              autoComplete="password"
-              textContentType="password"
-              value={password}
-              onChangeText={setPassword}
-              editable={!loading}
-              selectTextOnFocus={true}
-            />
-          </View>
-
-          {/* Login Button */}
-          <TouchableOpacity
-            style={[styles.loginButton, loading && styles.loginButtonDisabled, {
-              paddingVertical: responsivePadding(16),
-              borderRadius: formSizing.borderRadius,
-              marginTop: responsivePadding(10),
-              marginBottom: responsivePadding(20)
-            }]}
-            onPress={handleLogin}
-            activeOpacity={0.8}
-            disabled={loading}
-          >
-            {loading ? (
-              <ActivityIndicator color="#ffffff" size={responsiveWidth(20)} />
-            ) : (
-              <Text style={[styles.loginButtonText, { fontSize: responsiveFontSize(16) }]}>
-                LOGIN
-              </Text>
-            )}
-          </TouchableOpacity>
-
-          {/* Forgot Password */}
-          <TouchableOpacity
-            onPress={handleForgotPassword}
-            style={[styles.forgotPasswordContainer, { marginBottom: responsivePadding(10) }]}
-            disabled={loading}
-          >
-            <Text style={[styles.forgotPasswordText, { fontSize: responsiveFontSize(12) }]}>
-              FORGOT PASSWORD? <Text style={styles.clickHereLink}>Click Here</Text>
-            </Text>
-          </TouchableOpacity>
-
-          {/* Footer Links */}
-          <View style={[styles.footerLinksContainer, { 
-            marginBottom: responsivePadding(20),
+          {/* Logos */}
+          <View style={[styles.logosContainer, { 
+            marginBottom: responsivePadding(40),
             paddingHorizontal: responsivePadding(20)
           }]}>
-            <TouchableOpacity onPress={() => openLink('https://www.iims.org.uk/knowledge-centre/terms-and-conditions/')}>
-              <Text style={[styles.footerLink, { fontSize: responsiveFontSize(12) }]}>
-                Terms & Conditions
-              </Text>
-            </TouchableOpacity>
-            <Text style={[styles.footerSeparator, { fontSize: responsiveFontSize(12) }]}>    </Text>
-            <TouchableOpacity onPress={() => openLink('https://www.iims.org.uk/knowledge-centre/privacy-policy/')}>
-              <Text style={[styles.footerLink, { fontSize: responsiveFontSize(12) }]}>
-                Privacy Policy
-              </Text>
-            </TouchableOpacity>
+            <Image
+              source={require('../../assets/img/ecmidlogoblack.png')}
+              style={[styles.ecmidLogo, { 
+                width: responsiveWidth(110), 
+                height: responsiveHeight(110) 
+              }]}
+              resizeMode="contain"
+            />
+            <Image
+              source={require('../../assets/img/logo_iims.png')}
+              style={[styles.airlineLogo, { 
+                width: responsiveWidth(110), 
+                height: responsiveHeight(90) 
+              }]}
+              resizeMode="contain"
+            />
           </View>
-        </View>
-      </ScrollView>
+
+          {/* Form Container */}
+          <View style={[styles.formContainer, { 
+            paddingHorizontal: formSizing.padding,
+            marginBottom: responsivePadding(30)
+          }]}>
+            {/* Email Input */}
+            <View style={[styles.inputGroup, { marginBottom: responsivePadding(20) }]}>
+              <Text style={[styles.label, { fontSize: responsiveFontSize(14) }]}>
+                Email Address
+              </Text>
+              <TextInput
+                style={[styles.input, { 
+                  height: formSizing.inputHeight,
+                  fontSize: formSizing.fontSize,
+                  borderRadius: formSizing.borderRadius
+                }]}
+                placeholder="Enter your email"
+                placeholderTextColor="#999"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+                autoComplete="email"
+                textContentType="emailAddress"
+                value={email}
+                onChangeText={setEmail}
+                editable={!loading}
+                selectTextOnFocus={true}
+              />
+            </View>
+
+            {/* Password Input */}
+            <View style={[styles.inputGroup, { marginBottom: responsivePadding(20) }]}>
+              <Text style={[styles.label, { fontSize: responsiveFontSize(14) }]}>
+                Password
+              </Text>
+              <TextInput
+                style={[styles.input, { 
+                  height: formSizing.inputHeight,
+                  fontSize: formSizing.fontSize,
+                  borderRadius: formSizing.borderRadius
+                }]}
+                placeholder="Enter your password"
+                placeholderTextColor="#999"
+                secureTextEntry={true}
+                autoCapitalize="none"
+                autoCorrect={false}
+                autoComplete="password"
+                textContentType="password"
+                value={password}
+                onChangeText={setPassword}
+                editable={!loading}
+                selectTextOnFocus={true}
+              />
+            </View>
+
+            {/* Login Button */}
+            <TouchableOpacity
+              style={[styles.loginButton, loading && styles.loginButtonDisabled, {
+                paddingVertical: responsivePadding(16),
+                borderRadius: formSizing.borderRadius,
+                marginTop: responsivePadding(10),
+                marginBottom: responsivePadding(20)
+              }]}
+              onPress={handleLogin}
+              activeOpacity={0.8}
+              disabled={loading}
+            >
+              {loading ? (
+                <ActivityIndicator color="#ffffff" size={responsiveWidth(20)} />
+              ) : (
+                <Text style={[styles.loginButtonText, { fontSize: responsiveFontSize(16) }]}>
+                  LOGIN
+                </Text>
+              )}
+            </TouchableOpacity>
+
+            {/* Forgot Password */}
+            <TouchableOpacity
+              onPress={handleForgotPassword}
+              style={[styles.forgotPasswordContainer, { marginBottom: responsivePadding(10) }]}
+              disabled={loading}
+            >
+              <Text style={[styles.forgotPasswordText, { fontSize: responsiveFontSize(12) }]}>
+                FORGOT PASSWORD? <Text style={styles.clickHereLink}>Click Here</Text>
+              </Text>
+            </TouchableOpacity>
+
+            {/* Footer Links */}
+            <View style={[styles.footerLinksContainer, { 
+              marginBottom: responsivePadding(20),
+              paddingHorizontal: responsivePadding(20)
+            }]}>
+              <TouchableOpacity onPress={() => openLink('https://www.iims.org.uk/knowledge-centre/terms-and-conditions/')}>
+                <Text style={[styles.footerLink, { fontSize: responsiveFontSize(12) }]}>
+                  Terms & Conditions
+                </Text>
+              </TouchableOpacity>
+              <Text style={[styles.footerSeparator, { fontSize: responsiveFontSize(12) }]}>    </Text>
+              <TouchableOpacity onPress={() => openLink('https://www.iims.org.uk/knowledge-centre/privacy-policy/')}>
+                <Text style={[styles.footerLink, { fontSize: responsiveFontSize(12) }]}>
+                  Privacy Policy
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
 
       {/* Copyright - Fixed at bottom */}
       <View style={[styles.copyrightContainer, { 
@@ -252,6 +260,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',
+  },
+  keyboardAvoidingView: {
+    flex: 1,
   },
   scrollView: {
     flex: 1,

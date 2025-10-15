@@ -6,7 +6,7 @@ import { useRouter } from 'expo-router';
 export const useNavigation = () => {
   const router = useRouter();
 
-  const navigateTo = useCallback((route: string, options?: { replace?: boolean }) => {
+  const navigateTo = useCallback((route, options) => {
     try {
       if (options?.replace) {
         router.replace(route);

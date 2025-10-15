@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -16,6 +16,7 @@ import { useNavigation } from '../hooks/useNavigation';
 export default function HomeScreen() {
   const { navigateTo } = useNavigation();
   const insets = useSafeAreaInsets();
+  const navigationLockRef = useRef(false);
 
   // State for dynamic user data
   const [userData, setUserData] = useState({
@@ -29,6 +30,8 @@ export default function HomeScreen() {
   // Fetch user score on component mount
   useEffect(() => {
     fetchUserScore();
+    // Reset navigation lock when returning to this screen
+    navigationLockRef.current = false;
   }, []);
 
   const fetchUserScore = async () => {
@@ -37,36 +40,11 @@ export default function HomeScreen() {
 
     try {
       // TODO: Replace with your actual API endpoint
-      // const response = await fetch('YOUR_API_ENDPOINT/user/score', {
-      //   headers: {
-      //     'Authorization': `Bearer ${yourAuthToken}`,
-      //   },
-      // });
-      // const data = await response.json();
-
-      // Example API response structure:
-      // {
-      //   companyName: "Aldrige EDOT Solutions",
-      //   score: 0,
-      //   userId: "12345",
-      //   lastUpdated: "2025-10-11T10:00:00Z"
-      // }
-
-      // Uncomment when API is ready:
-      // setUserData({
-      //   companyName: data.companyName || userData.companyName,
-      //   score: data.score ?? 0,
-      //   userId: data.userId,
-      // });
-
-      // Simulate API call for testing (remove this in production)
-      // await new Promise(resolve => setTimeout(resolve, 1000));
-      // setUserData(prev => ({ ...prev, score: 0 }));
-
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 100));
     } catch (err) {
       console.error('Error fetching user score:', err);
       setScoreError('Failed to load score');
-      // Keep using default/cached data
     } finally {
       setIsLoadingScore(false);
     }
@@ -83,7 +61,12 @@ export default function HomeScreen() {
         },
         {
           text: 'Yes',
-          onPress: () => navigateTo('/login', { replace: true }),
+          onPress: () => {
+            if (!navigationLockRef.current) {
+              navigationLockRef.current = true;
+              navigateTo('/login', { replace: true });
+            }
+          },
           style: 'destructive',
         },
       ],
@@ -91,13 +74,34 @@ export default function HomeScreen() {
     );
   };
 
+  const handleTilePress = (path) => {
+    console.log('Tile pressed:', path, 'Lock status:', navigationLockRef.current);
+    
+    if (navigationLockRef.current) {
+      console.log('Navigation blocked - already navigating');
+      return;
+    }
+
+    navigationLockRef.current = true;
+    console.log('Navigating to:', path);
+    
+    setTimeout(() => {
+      navigateTo(path);
+    }, 50);
+
+    setTimeout(() => {
+      navigationLockRef.current = false;
+      console.log('Navigation lock released');
+    }, 800);
+  };
+
   const tiles = [
-    { key: 'claim', label: 'Claim Points', icon: 'gift-outline', onPress: () => navigateTo('/claim-points') },
-    { key: 'activity', label: 'My Activity', icon: 'document-text-outline', onPress: () => navigateTo('/activity') },
-    { key: 'points-table', label: 'Points Table', icon: 'calendar-outline', onPress: () => navigateTo('/points-table') },
-    { key: 'about-ecmid', label: 'About eCMID', icon: 'reader-outline', isImage: true, onPress: () => navigateTo('/about-ecmid') },
-    { key: 'about-app', label: 'About App', icon: 'information-outline', onPress: () => navigateTo('/about') },
-    { key: 'logout', label: 'Logout', icon: 'log-out-outline', onPress: handleLogout },
+    { key: 'claim', label: 'Claim Points', icon: 'gift-outline', path: '/claim-points' },
+    { key: 'activity', label: 'My Activity', icon: 'document-text-outline', path: '/activity' },
+    { key: 'points-table', label: 'Points Table', icon: 'calendar-outline', path: '/points-table' },
+    { key: 'about-ecmid', label: 'About eCMID', icon: 'reader-outline', isImage: true, path: '/about-ecmid' },
+    { key: 'about-app', label: 'About App', icon: 'information-outline', path: '/about' },
+    { key: 'logout', label: 'Logout', icon: 'log-out-outline', isLogout: true },
   ];
 
   return (
@@ -137,7 +141,7 @@ export default function HomeScreen() {
           </View>
         </View>
         <TouchableOpacity 
-          onPress={() => navigateTo('/score')}
+          onPress={() => handleTilePress('/score')}
           activeOpacity={0.7}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
@@ -169,7 +173,7 @@ export default function HomeScreen() {
                 !isFirstRow && styles.tileTop
               ]}
               activeOpacity={0.8}
-              onPress={t.onPress}
+              onPress={() => t.isLogout ? handleLogout() : handleTilePress(t.path)}
             >
               <View style={styles.tileContent}>
                 {t.isImage ? (

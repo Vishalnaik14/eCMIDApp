@@ -29,6 +29,17 @@ import useActivities from '../hooks/useActivities';
 import useFilePicker from '../hooks/useFilePicker';
 import useDateValidation from '../hooks/useDateValidation';
 
+// Import responsive utilities
+import {
+  responsiveWidth,
+  responsiveHeight,
+  responsiveFontSize,
+  responsivePadding,
+  getDeviceType,
+  getFormSizing,
+  SCREEN_WIDTH,
+} from '../utils/responsive';
+
 export default function ClaimPointsScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
@@ -45,6 +56,11 @@ export default function ClaimPointsScreen() {
   const [showAttachmentModal, setShowAttachmentModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [description, setDescription] = useState('');
+
+  // Responsive values
+  const deviceType = getDeviceType();
+  const formSizing = getFormSizing();
+  const isTablet = deviceType === 'tablet';
 
   const handleReset = () => {
     clearAttachment();
@@ -117,19 +133,30 @@ export default function ClaimPointsScreen() {
           showLogo 
         />
 
-        <ScrollView contentContainerStyle={styles.activitiesContent}>
+        <ScrollView contentContainerStyle={[
+          styles.activitiesContent,
+          {
+            padding: responsivePadding(16),
+            alignItems: 'center',
+          }
+        ]}>
           {loadingActivities ? (
             <View style={styles.loadingContainer}>
               <ActivityIndicator size="large" color="#1e9fd8" />
             </View>
           ) : (
-            activities.map((activity) => (
-              <ActivityCard
-                key={activity.id}
-                activity={activity}
-                onPress={() => handleActivitySelect(activity)}
-              />
-            ))
+            <View style={{ 
+              width: '100%', 
+              maxWidth: isTablet ? responsiveWidth(700) : SCREEN_WIDTH 
+            }}>
+              {activities.map((activity) => (
+                <ActivityCard
+                  key={activity.id}
+                  activity={activity}
+                  onPress={() => handleActivitySelect(activity)}
+                />
+              ))}
+            </View>
           )}
         </ScrollView>
       </View>
@@ -151,75 +178,136 @@ export default function ClaimPointsScreen() {
       >
         <ScrollView 
           ref={scrollViewRef}
-          contentContainerStyle={styles.formContent}
+          contentContainerStyle={[
+            styles.formContent,
+            {
+              padding: responsivePadding(16),
+              paddingBottom: Platform.OS === 'android' ? responsiveHeight(100) : responsiveHeight(40),
+              alignItems: 'center',
+            }
+          ]}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
           nestedScrollEnabled={true}
         >
-          {/* Selected Activity Banner */}
-          <ActivityBanner activity={selectedActivity} />
+          <View style={{ 
+            width: '100%', 
+            maxWidth: isTablet ? responsiveWidth(700) : SCREEN_WIDTH 
+          }}>
+            {/* Selected Activity Banner */}
+            <ActivityBanner activity={selectedActivity} />
 
-          {/* Attachment Section */}
-          <AttachmentSection
-            attachment={attachment}
-            onAttach={() => setShowAttachmentModal(true)}
-            onRemove={clearAttachment}
-          />
+            {/* Attachment Section */}
+            <AttachmentSection
+              attachment={attachment}
+              onAttach={() => setShowAttachmentModal(true)}
+              onRemove={clearAttachment}
+            />
 
-          {/* Date Pickers */}
-          <ThemedDatePicker
-            value={startDate}
-            onDateChange={handleStartDateChange}
-            label="Start Date"
-          />
-          <View style={{ marginTop: 16 }}>
+            {/* Date Pickers */}
             <ThemedDatePicker
-              value={endDate}
-              onDateChange={handleEndDateChange}
-              label="End Date"
+              value={startDate}
+              onDateChange={handleStartDateChange}
+              label="Start Date"
             />
-          </View>
+            <View style={{ marginTop: responsiveHeight(16) }}>
+              <ThemedDatePicker
+                value={endDate}
+                onDateChange={handleEndDateChange}
+                label="End Date"
+              />
+            </View>
 
-          {/* Description */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Description</Text>
-            <TextInput
-              style={styles.textArea}
-              value={description}
-              onChangeText={setDescription}
-              placeholder="Enter description"
-              placeholderTextColor="#999"
-              multiline
-              numberOfLines={6}
-              textAlignVertical="top"
-              onFocus={() => {
-                setTimeout(() => {
-                  scrollViewRef.current?.scrollToEnd({ animated: true });
-                }, 300);
-              }}
-            />
-          </View>
+            {/* Description */}
+            <View style={[styles.inputGroup, { marginTop: responsiveHeight(16) }]}>
+              <Text style={[
+                styles.inputLabel,
+                {
+                  fontSize: responsiveFontSize(14),
+                  marginBottom: responsiveHeight(6),
+                }
+              ]}>
+                Description
+              </Text>
+              <TextInput
+                style={[
+                  styles.textArea,
+                  {
+                    fontSize: formSizing.fontSize,
+                    height: isTablet ? responsiveHeight(160) : responsiveHeight(120),
+                    padding: formSizing.padding,
+                    borderRadius: formSizing.borderRadius,
+                  }
+                ]}
+                value={description}
+                onChangeText={setDescription}
+                placeholder="Enter description"
+                placeholderTextColor="#999"
+                multiline
+                numberOfLines={isTablet ? 8 : 6}
+                textAlignVertical="top"
+                onFocus={() => {
+                  setTimeout(() => {
+                    scrollViewRef.current?.scrollToEnd({ animated: true });
+                  }, 300);
+                }}
+              />
+            </View>
 
-          {/* Buttons */}
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={[styles.button, styles.resetButton]}
-              onPress={handleReset}
-              disabled={isLoading}
-            >
-              <Text style={styles.buttonText}>RESET</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.button, styles.sendButton]}
-              onPress={handleSend}
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <ActivityIndicator size="small" color="#fff" />
-              ) : (
-                <Text style={styles.buttonText}>SEND</Text>
-              )}
-            </TouchableOpacity>
+            {/* Buttons */}
+            <View style={[
+              styles.buttonContainer,
+              {
+                marginTop: responsiveHeight(20),
+              }
+            ]}>
+              <TouchableOpacity
+                style={[
+                  styles.button,
+                  styles.resetButton,
+                  {
+                    minHeight: formSizing.inputHeight,
+                    paddingVertical: responsiveHeight(14),
+                    borderRadius: formSizing.borderRadius,
+                    marginRight: responsiveWidth(8),
+                  }
+                ]}
+                onPress={handleReset}
+                disabled={isLoading}
+              >
+                <Text style={[
+                  styles.buttonText,
+                  { fontSize: responsiveFontSize(16) }
+                ]}>
+                  RESET
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.button,
+                  styles.sendButton,
+                  {
+                    minHeight: formSizing.inputHeight,
+                    paddingVertical: responsiveHeight(14),
+                    borderRadius: formSizing.borderRadius,
+                    marginLeft: responsiveWidth(8),
+                  }
+                ]}
+                onPress={handleSend}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                  <Text style={[
+                    styles.buttonText,
+                    { fontSize: responsiveFontSize(16) }
+                  ]}>
+                    SEND
+                  </Text>
+                )}
+              </TouchableOpacity>
+            </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -242,60 +330,48 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
   activitiesContent: {
-    padding: 16,
+    flexGrow: 1,
   },
   loadingContainer: {
-    paddingVertical: 40,
+    paddingVertical: responsiveHeight(40),
     alignItems: 'center',
+    width: '100%',
   },
   formContent: {
-    padding: 16,
-    paddingBottom: Platform.OS === 'android' ? 100 : 40,
+    flexGrow: 1,
   },
   inputGroup: {
-    marginTop: 16,
+    width: '100%',
   },
   inputLabel: {
-    fontSize: 14,
     color: '#333',
-    marginBottom: 6,
     fontWeight: '500',
   },
   textArea: {
     backgroundColor: '#fff',
     borderWidth: 1,
     borderColor: '#ddd',
-    borderRadius: 6,
-    padding: 12,
-    fontSize: 14,
     color: '#333',
-    height: 120,
     textAlignVertical: 'top',
   },
   buttonContainer: {
     flexDirection: 'row',
-    marginTop: 20,
-    marginBottom: 20,
+    width: '100%',
+    marginBottom: responsiveHeight(20),
   },
   button: {
     flex: 1,
-    paddingVertical: 14,
-    borderRadius: 6,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 48,
   },
   resetButton: {
     backgroundColor: '#546e7a',
-    marginRight: 8,
   },
   sendButton: {
     backgroundColor: '#546e7a',
-    marginLeft: 8,
   },
   buttonText: {
     color: '#fff',
-    fontSize: 16,
     fontWeight: '600',
   },
 });

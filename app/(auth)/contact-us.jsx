@@ -14,6 +14,16 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import {
+  responsiveWidth,
+  responsiveHeight,
+  responsiveFontSize,
+  responsivePadding,
+  getHeaderSize,
+  getFormSizing,
+  getSafeAreaPadding,
+  getDeviceType,
+} from '../../utils/responsive';
 
 export default function ContactUsScreen() {
   const router = useRouter();
@@ -21,6 +31,11 @@ export default function ContactUsScreen() {
   const [email, setEmail] = useState('');
   const [subject, setSubject] = useState('');
   const [details, setDetails] = useState('');
+
+  const deviceType = getDeviceType();
+  const headerSize = getHeaderSize();
+  const formSizing = getFormSizing();
+  const safeArea = getSafeAreaPadding();
 
   const validate = () => {
     if (!name.trim() || !email.trim() || !subject.trim() || !details.trim()) {
@@ -60,20 +75,24 @@ export default function ContactUsScreen() {
     >
       {/* Header */}
       <View style={styles.headerContainer}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => router.back()}
-          hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
-          activeOpacity={0.7}
-        >
-          <Ionicons name="arrow-back" size={26} color="#ffffff" />
-        </TouchableOpacity>
-        <Text style={styles.headerText}>Get In Touch</Text>
-        <Image
-          source={require('../../assets/img/ecmidlogoblack.png')}
-          style={styles.headerLogo}
-          resizeMode="contain"
-        />
+        <View style={styles.headerContent}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => router.back()}
+            hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="arrow-back" size={responsiveWidth(26)} color="#ffffff" />
+          </TouchableOpacity>
+          <Text style={[styles.headerText, { fontSize: headerSize.fontSize }]} numberOfLines={1}>
+            Get In Touch
+          </Text>
+          <Image
+            source={require('../../assets/img/ecmidlogoblack.png')}
+            style={[styles.headerLogo, { width: headerSize.logoSize, height: headerSize.logoSize }]}
+            resizeMode="contain"
+          />
+        </View>
       </View>
 
       <KeyboardAvoidingView
@@ -83,53 +102,104 @@ export default function ContactUsScreen() {
       >
         <ScrollView
           style={styles.scrollView}
-          contentContainerStyle={styles.contentContainer}
+          contentContainerStyle={[
+            styles.contentContainer,
+            {
+              paddingTop: responsiveHeight(20),
+              paddingHorizontal: safeArea.horizontal,
+              paddingBottom: Platform.OS === 'android' ? responsiveHeight(100) : responsiveHeight(40),
+            },
+          ]}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          <View style={styles.formContainer}>
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Name:</Text>
+          <View style={[styles.formContainer, { marginBottom: responsiveHeight(30) }]}>
+            {/* Name Input */}
+            <View style={[styles.inputGroup, { marginBottom: responsiveHeight(25) }]}>
+              <Text style={[styles.label, { fontSize: responsiveFontSize(14), marginBottom: responsiveHeight(10) }]}>
+                Name:
+              </Text>
               <TextInput
-                style={styles.input}
-                placeholder=""
+                style={[
+                  styles.input,
+                  {
+                    paddingVertical: formSizing.padding / 1.5,
+                    fontSize: formSizing.fontSize,
+                  },
+                ]}
+                placeholder="Enter your name"
                 placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                autoCapitalize="words"
+                autoCorrect={false}
                 value={name}
                 onChangeText={setName}
               />
             </View>
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Email:</Text>
+            {/* Email Input */}
+            <View style={[styles.inputGroup, { marginBottom: responsiveHeight(25) }]}>
+              <Text style={[styles.label, { fontSize: responsiveFontSize(14), marginBottom: responsiveHeight(10) }]}>
+                Email:
+              </Text>
               <TextInput
-                style={styles.input}
+                style={[
+                  styles.input,
+                  {
+                    paddingVertical: formSizing.padding / 1.5,
+                    fontSize: formSizing.fontSize,
+                  },
+                ]}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoCorrect={false}
-                placeholder=""
+                placeholder="Enter your email"
                 placeholderTextColor="rgba(255, 255, 255, 0.5)"
                 value={email}
                 onChangeText={setEmail}
               />
             </View>
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Subject:</Text>
+            {/* Subject Input */}
+            <View style={[styles.inputGroup, { marginBottom: responsiveHeight(25) }]}>
+              <Text style={[styles.label, { fontSize: responsiveFontSize(14), marginBottom: responsiveHeight(10) }]}>
+                Subject:
+              </Text>
               <TextInput
-                style={styles.input}
-                placeholder=""
+                style={[
+                  styles.input,
+                  {
+                    paddingVertical: formSizing.padding / 1.5,
+                    fontSize: formSizing.fontSize,
+                  },
+                ]}
+                placeholder="Enter subject"
                 placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                autoCapitalize="sentences"
+                autoCorrect={false}
                 value={subject}
                 onChangeText={setSubject}
               />
             </View>
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Please enter details:</Text>
+            {/* Details Input */}
+            <View style={[styles.inputGroup, { marginBottom: responsiveHeight(25) }]}>
+              <Text style={[styles.label, { fontSize: responsiveFontSize(14), marginBottom: responsiveHeight(10) }]}>
+                Please enter details:
+              </Text>
               <TextInput
-                style={[styles.input, styles.multilineInput]}
-                placeholder=""
+                style={[
+                  styles.input,
+                  styles.multilineInput,
+                  {
+                    paddingVertical: formSizing.padding / 1.5,
+                    fontSize: formSizing.fontSize,
+                    minHeight: responsiveHeight(120),
+                  },
+                ]}
+                placeholder="Enter your message details here"
                 placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                autoCapitalize="sentences"
+                autoCorrect={false}
                 value={details}
                 onChangeText={setDetails}
                 multiline
@@ -138,8 +208,13 @@ export default function ContactUsScreen() {
               />
             </View>
 
-            <TouchableOpacity style={styles.sendButton} onPress={handleSend} activeOpacity={0.8}>
-              <Text style={styles.sendButtonText}>SEND</Text>
+            {/* Send Button */}
+            <TouchableOpacity
+              style={[styles.sendButton, { paddingVertical: responsiveHeight(16), marginTop: responsiveHeight(20) }]}
+              onPress={handleSend}
+              activeOpacity={0.8}
+            >
+              <Text style={[styles.sendButtonText, { fontSize: responsiveFontSize(16) }]}>SEND</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -154,29 +229,31 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     backgroundColor: '#1e9fd8',
-    paddingTop: 50,
-    paddingBottom: 20,
-    paddingHorizontal: 20,
+    paddingTop: Platform.OS === 'ios' ? responsiveHeight(50) : responsiveHeight(40),
+    paddingBottom: responsiveHeight(20),
+    paddingHorizontal: responsivePadding(16),
+  },
+  headerContent: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    gap: responsiveWidth(12),
   },
   backButton: {
-    padding: 8,
-    marginLeft: -8,
-    zIndex: 10,
+    padding: responsiveWidth(8),
+    justifyContent: 'center',
+    alignItems: 'center',
+    minWidth: responsiveWidth(44),
+    minHeight: responsiveWidth(44),
   },
   headerText: {
-    fontSize: 20,
     fontWeight: '600',
     color: '#ffffff',
     flex: 1,
     textAlign: 'center',
-    marginLeft: -29,
   },
   headerLogo: {
-    width: 56,
-    height: 56,
+    resizeMode: 'contain',
   },
   keyboardAvoidingView: {
     flex: 1,
@@ -185,9 +262,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentContainer: {
-    paddingTop: 20,
-    paddingHorizontal: 20,
-    paddingBottom: Platform.OS === 'android' ? 100 : 40,
+    flexGrow: 1,
   },
   formContainer: {
     marginBottom: 30,
@@ -196,7 +271,6 @@ const styles = StyleSheet.create({
     marginBottom: 25,
   },
   label: {
-    fontSize: 14,
     color: '#ffffff',
     marginBottom: 10,
     fontWeight: '400',
@@ -206,20 +280,16 @@ const styles = StyleSheet.create({
     borderWidth: 0,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255, 255, 255, 0.5)',
-    paddingVertical: 12,
     paddingHorizontal: 0,
-    fontSize: 16,
     color: '#ffffff',
   },
   multilineInput: {
     textAlignVertical: 'top',
-    paddingTop: 8,
-    minHeight: 96,
+    paddingTop: responsiveHeight(8),
   },
   sendButton: {
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    paddingVertical: 16,
-    borderRadius: 4,
+    borderRadius: responsiveWidth(4),
     alignItems: 'center',
     marginTop: 20,
     borderWidth: 1,
@@ -227,7 +297,6 @@ const styles = StyleSheet.create({
   },
   sendButtonText: {
     color: '#ffffff',
-    fontSize: 16,
     fontWeight: '600',
     letterSpacing: 1,
   },

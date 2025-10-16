@@ -16,6 +16,16 @@ import {
 import { useRouter } from 'expo-router';
 import { useUser } from '../../hooks/useUser';
 import { Ionicons } from '@expo/vector-icons';
+import {
+  responsiveWidth,
+  responsiveHeight,
+  responsiveFontSize,
+  responsivePadding,
+  getHeaderSize,
+  getFormSizing,
+  getSafeAreaPadding,
+  getDeviceType,
+} from '../../utils/responsive';
 
 export default function ForgotPasswordScreen() {
   const router = useRouter();
@@ -24,6 +34,11 @@ export default function ForgotPasswordScreen() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const deviceType = getDeviceType();
+  const headerSize = getHeaderSize();
+  const formSizing = getFormSizing();
+  const safeArea = getSafeAreaPadding();
 
   // Email validation function
   const validateEmail = (email) => {
@@ -92,20 +107,24 @@ export default function ForgotPasswordScreen() {
     >
       {/* Header */}
       <View style={styles.headerContainer}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => router.back()}
-          activeOpacity={0.7}
-          hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
-        >
-          <Ionicons name="arrow-back" size={26} color="#ffffff" />
-        </TouchableOpacity>
-        <Text style={styles.headerText}>Forgot Password</Text>
-        <Image
-          source={require('../../assets/img/ecmidlogoblack.png')}
-          style={styles.headerLogo}
-          resizeMode="contain"
-        />
+        <View style={styles.headerContent}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => router.back()}
+            activeOpacity={0.7}
+            hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+          >
+            <Ionicons name="arrow-back" size={responsiveWidth(26)} color="#ffffff" />
+          </TouchableOpacity>
+          <Text style={[styles.headerText, { fontSize: headerSize.fontSize }]} numberOfLines={1}>
+            Forgot Password
+          </Text>
+          <Image
+            source={require('../../assets/img/ecmidlogoblack.png')}
+            style={[styles.headerLogo, { width: headerSize.logoSize, height: headerSize.logoSize }]}
+            resizeMode="contain"
+          />
+        </View>
       </View>
 
       <KeyboardAvoidingView
@@ -115,24 +134,39 @@ export default function ForgotPasswordScreen() {
       >
         <ScrollView
           style={styles.scrollView}
-          contentContainerStyle={styles.contentContainer}
+          contentContainerStyle={[
+            styles.contentContainer,
+            {
+              paddingTop: responsiveHeight(40),
+              paddingHorizontal: safeArea.horizontal,
+              paddingBottom: Platform.OS === 'android' ? responsiveHeight(100) : responsiveHeight(40),
+            },
+          ]}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
           {/* Instructions */}
-          <View style={styles.instructionsContainer}>
-            <Text style={styles.instructionsText}>
+          <View style={[styles.instructionsContainer, { marginBottom: responsiveHeight(40) }]}>
+            <Text style={[styles.instructionsText, { fontSize: responsiveFontSize(16) }]}>
               Enter your details to reset password
             </Text>
           </View>
 
           {/* Form Container */}
-          <View style={styles.formContainer}>
+          <View style={[styles.formContainer, { marginBottom: responsiveHeight(30) }]}>
             {/* Email Input */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Email Address</Text>
+            <View style={[styles.inputGroup, { marginBottom: responsiveHeight(30) }]}>
+              <Text style={[styles.label, { fontSize: responsiveFontSize(14), marginBottom: responsiveHeight(10) }]}>
+                Email Address
+              </Text>
               <TextInput
-                style={styles.input}
+                style={[
+                  styles.input,
+                  {
+                    paddingVertical: formSizing.padding / 1.5,
+                    fontSize: formSizing.fontSize,
+                  },
+                ]}
                 placeholder="Enter your email"
                 placeholderTextColor="rgba(255, 255, 255, 0.5)"
                 keyboardType="email-address"
@@ -145,10 +179,18 @@ export default function ForgotPasswordScreen() {
             </View>
 
             {/* New Password Input */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Enter Password</Text>
+            <View style={[styles.inputGroup, { marginBottom: responsiveHeight(30) }]}>
+              <Text style={[styles.label, { fontSize: responsiveFontSize(14), marginBottom: responsiveHeight(10) }]}>
+                Enter Password
+              </Text>
               <TextInput
-                style={styles.input}
+                style={[
+                  styles.input,
+                  {
+                    paddingVertical: formSizing.padding / 1.5,
+                    fontSize: formSizing.fontSize,
+                  },
+                ]}
                 placeholder="Enter new password"
                 placeholderTextColor="rgba(255, 255, 255, 0.5)"
                 secureTextEntry={true}
@@ -161,10 +203,18 @@ export default function ForgotPasswordScreen() {
             </View>
 
             {/* Confirm Password Input */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Confirm Password</Text>
+            <View style={[styles.inputGroup, { marginBottom: responsiveHeight(30) }]}>
+              <Text style={[styles.label, { fontSize: responsiveFontSize(14), marginBottom: responsiveHeight(10) }]}>
+                Confirm Password
+              </Text>
               <TextInput
-                style={styles.input}
+                style={[
+                  styles.input,
+                  {
+                    paddingVertical: formSizing.padding / 1.5,
+                    fontSize: formSizing.fontSize,
+                  },
+                ]}
                 placeholder="Confirm new password"
                 placeholderTextColor="rgba(255, 255, 255, 0.5)"
                 secureTextEntry={true}
@@ -178,7 +228,11 @@ export default function ForgotPasswordScreen() {
 
             {/* Reset Password Button */}
             <TouchableOpacity
-              style={[styles.resetButton, loading && styles.resetButtonDisabled]}
+              style={[
+                styles.resetButton,
+                { paddingVertical: responsiveHeight(16), marginTop: responsiveHeight(20) },
+                loading && styles.resetButtonDisabled,
+              ]}
               onPress={handleResetPassword}
               activeOpacity={0.8}
               disabled={loading}
@@ -186,7 +240,9 @@ export default function ForgotPasswordScreen() {
               {loading ? (
                 <ActivityIndicator color="#ffffff" />
               ) : (
-                <Text style={styles.resetButtonText}>RESET PASSWORD</Text>
+                <Text style={[styles.resetButtonText, { fontSize: responsiveFontSize(16) }]}>
+                  RESET PASSWORD 
+                </Text>
               )}
             </TouchableOpacity>
           </View>
@@ -202,29 +258,32 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     backgroundColor: '#1e9fd8',
-    paddingTop: 50,
-    paddingBottom: 20,
-    paddingHorizontal: 20,
+    paddingTop: Platform.OS === 'ios' ? responsiveHeight(50) : responsiveHeight(40),
+    paddingBottom: responsiveHeight(20),
+    paddingHorizontal: responsivePadding(16),
+  },
+  headerContent: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    gap: responsiveWidth(12),
   },
   backButton: {
-    padding: 8,
-    marginLeft: -8,
-    zIndex: 10,
+    padding: responsiveWidth(8),
+    justifyContent: 'center',
+    alignItems: 'center',
+    minWidth: responsiveWidth(44),
+    minHeight: responsiveWidth(44),
   },
   headerText: {
-    fontSize: 20,
     fontWeight: '600',
     color: '#ffffff',
     flex: 1,
     textAlign: 'center',
-    marginLeft: -29,
+    numberOfLines: 1,
   },
   headerLogo: {
-    width: 56,
-    height: 56,
+    resizeMode: 'contain',
   },
   keyboardAvoidingView: {
     flex: 1,
@@ -233,15 +292,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentContainer: {
-    paddingTop: 40,
-    paddingHorizontal: 20,
-    paddingBottom: Platform.OS === 'android' ? 100 : 40,
+    flexGrow: 1,
   },
   instructionsContainer: {
     marginBottom: 40,
   },
   instructionsText: {
-    fontSize: 16,
     color: '#ffffff',
     textAlign: 'left',
   },
@@ -252,7 +308,6 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   label: {
-    fontSize: 14,
     color: '#ffffff',
     marginBottom: 10,
     fontWeight: '400',
@@ -262,15 +317,12 @@ const styles = StyleSheet.create({
     borderWidth: 0,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255, 255, 255, 0.5)',
-    paddingVertical: 12,
     paddingHorizontal: 0,
-    fontSize: 16,
     color: '#ffffff',
   },
   resetButton: {
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    paddingVertical: 16,
-    borderRadius: 4,
+    borderRadius: responsiveWidth(4),
     alignItems: 'center',
     marginTop: 20,
     borderWidth: 1,
@@ -281,7 +333,6 @@ const styles = StyleSheet.create({
   },
   resetButtonText: {
     color: '#ffffff',
-    fontSize: 16,
     fontWeight: '600',
     letterSpacing: 1,
   },

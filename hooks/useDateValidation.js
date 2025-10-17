@@ -7,21 +7,19 @@ export default function useDateValidation() {
   const [endDate, setEndDate] = useState(null);
 
   const handleStartDateChange = (date) => {
-    // If end date exists and new start date is after end date, reset both dates
+    // If end date exists and new start date is after end date, only reset start date
     if (endDate && date && new Date(date) > new Date(endDate)) {
-      Alert.alert('Invalid Date', 'Start date cannot be after end date. Please select valid dates.');
+      Alert.alert('Invalid Date', 'Start date cannot be after end date.');
       setStartDate(null);
-      setEndDate(null);
       return;
     }
     setStartDate(date);
   };
 
   const handleEndDateChange = (date) => {
-    // If start date exists and new end date is before start date, reset both dates
+    // If start date exists and new end date is before start date, only reset end date
     if (startDate && date && new Date(date) < new Date(startDate)) {
-      Alert.alert('Invalid Date', 'End date cannot be before start date. Please select valid dates.');
-      setStartDate(null);
+      Alert.alert('Invalid Date', 'End date cannot be before start date.');
       setEndDate(null);
       return;
     }

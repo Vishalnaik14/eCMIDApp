@@ -28,8 +28,8 @@ As the commercial arm of the Institute, MSA is able to call on a wide selection 
 The MSA is being developed to meet the growing demand from a number of international marine organisations for specialised skills-based training and accreditation schemes. MSA delivers these training solutions at various locations, using specialist tutors and examiners.
 
 For more information visit the website at `,
-    websiteUrl: 'http://marinesurveyingacademy.com',
-    helpUrl: 'http://ecmid.iims.org.uk/ecmidWeb/Public/apphelp.aspx',
+    websiteUrl: 'https://marinesurveyingacademy.com',
+    helpUrl: 'https://ecmid.iims.org.uk/ecmidWeb/Public/apphelp.aspx',
     lastUpdated: null,
   });
   

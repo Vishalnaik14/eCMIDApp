@@ -168,7 +168,9 @@ export default function ClaimPointsScreen() {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <Header 
         title="Claim Your Points" 
-        onBack={handleBackToList} 
+        onBack={handleBackToList}
+        showLogo
+        logoPath={require("../assets/img/ecmidlogoblack.png")} 
       />
 
       <KeyboardAvoidingView 

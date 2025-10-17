@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
   headerLogo: {
-    width: 44,
-    height: 44,
+    width: 48,
+    height: 48,
   },
 });

@@ -12,6 +12,7 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
+  StatusBar,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -88,6 +89,7 @@ export default function LoginScreen() {
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
+      <StatusBar barStyle="dark-content" backgroundColor="#f5f5f5" />
       <KeyboardAvoidingView
         style={styles.keyboardAvoidingView}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -101,8 +103,8 @@ export default function LoginScreen() {
         >
           {/* Header */}
           <View style={[styles.headerContainer, { 
-            paddingVertical: responsivePadding(20),
-            minHeight: responsiveHeight(80)
+            paddingVertical: responsivePadding(16),
+            minHeight: responsiveHeight(60)
           }]}>
             <Text style={[styles.signInText, { fontSize: responsiveFontSize(24) }]}>
               Sign in

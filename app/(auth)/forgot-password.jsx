@@ -257,7 +257,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerContainer: {
-    backgroundColor: '#1e9fd8',
+
     paddingTop: Platform.OS === 'ios' ? responsiveHeight(50) : responsiveHeight(40),
     paddingBottom: responsiveHeight(20),
     paddingHorizontal: responsivePadding(16),

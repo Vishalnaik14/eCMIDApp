@@ -56,7 +56,7 @@ export default function ActivityScreen() {
           date: '8',
           month: 'Apr 2025',
           status: 'REJECTED',
-          title: 'Visiting a technical exhibition, or other recognised maritime related show.',
+          title: 'Newly attained internal or external training, or completion of structured courses.',
           description: 'Testing by eDOT Please ignore. (Apr 7 2025 - Apr 8 2025)',
           points: 1,
           pointsLabel: 'Point',
@@ -78,7 +78,7 @@ export default function ActivityScreen() {
           date: '10',
           month: 'Jan 2025',
           status: 'APPROVED',
-          title: 'Newly attained internal or external training, or completion of structured courses.',
+          title: 'Subscription to a marine publication, journal or magazine.',
           description: 'This is a new test by Edot',
           points: 4,
           pointsLabel: 'Points',
@@ -227,8 +227,8 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   headerLogo: {
-    width: 44,
-    height: 44,
+    width: 48,
+    height: 48,
   },
   loadingContainer: {
     flex: 1,
@@ -338,11 +338,13 @@ const styles = StyleSheet.create({
     color: '#333333',
     marginBottom: 6,
     lineHeight: 20,
+    textAlign: 'center',
   },
   activityDescription: {
     fontSize: 12,
     color: '#666666',
     lineHeight: 18,
+    textAlign: 'center',
   },
   pointsSection: {
     width: 60,

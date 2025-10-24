@@ -1,4 +1,5 @@
 import { createContext, useState } from "react";
+import { setUserContext, clearUserContext, addBreadcrumb } from '../utils/sentry';
 
 export const UserContext = createContext();
 
@@ -14,11 +15,19 @@ export function UserProvider({ children }) {
       
       // Mock user object
       const mockUser = {
+        id: email, // Add ID for Sentry
         email: email,
         name: email.split('@')[0],
       };
       
       setUser(mockUser);
+      
+      // Set Sentry user context
+      setUserContext(mockUser);
+      
+      // Track login event
+      addBreadcrumb('User logged in', 'auth', 'info', { email });
+      
       return { success: true };
     } catch (error) {
       throw Error('Login failed');
@@ -30,10 +39,18 @@ export function UserProvider({ children }) {
     try {
       await new Promise(resolve => setTimeout(resolve, 1000));
       const mockUser = {
+        id: email, // Add ID for Sentry
         email: email,
         name: email.split('@')[0],
       };
       setUser(mockUser);
+      
+      // Set Sentry user context
+      setUserContext(mockUser);
+      
+      // Track registration event
+      addBreadcrumb('User registered', 'auth', 'info', { email });
+      
       return { success: true };
     } catch (error) {
       throw Error('Registration failed');
@@ -43,6 +60,12 @@ export function UserProvider({ children }) {
   // Mock logout function
   async function logout() {
     setUser(null);
+    
+    // Clear Sentry user context
+    clearUserContext();
+    
+    // Track logout event
+    addBreadcrumb('User logged out', 'auth', 'info');
   }
 
   // Mock password reset email

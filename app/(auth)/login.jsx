@@ -146,9 +146,11 @@ export default function LoginScreen() {
               </Text>
               <TextInput
                 style={[styles.input, { 
-                  height: formSizing.inputHeight,
+                  minHeight: formSizing.inputHeight,
                   fontSize: formSizing.fontSize,
-                  borderRadius: formSizing.borderRadius
+                  borderRadius: formSizing.borderRadius,
+                  lineHeight: Platform.OS === 'ios' ? formSizing.fontSize * 1.4 : undefined,
+                  includeFontPadding: false
                 }]}
                 placeholder="Enter your email"
                 placeholderTextColor="#999"
@@ -171,9 +173,10 @@ export default function LoginScreen() {
               </Text>
               <TextInput
                 style={[styles.input, { 
-                  height: formSizing.inputHeight,
+                  minHeight: formSizing.inputHeight,
                   fontSize: formSizing.fontSize,
-                  borderRadius: formSizing.borderRadius
+                  borderRadius: formSizing.borderRadius,
+                  lineHeight: formSizing.fontSize * 1.4
                 }]}
                 placeholder="Enter your password"
                 placeholderTextColor="#999"
@@ -244,9 +247,10 @@ export default function LoginScreen() {
 
       {/* Copyright - Fixed at bottom */}
       <View style={[styles.copyrightContainer, { 
-        paddingBottom: insets.bottom,
-        paddingVertical: responsivePadding(15),
-        paddingHorizontal: responsivePadding(20)
+        paddingBottom: Math.max(insets.bottom, responsivePadding(2)),
+        paddingTop: responsivePadding(10),
+        paddingHorizontal: responsivePadding(18),
+        marginBottom: responsivePadding(8)
       }]}>
         <TouchableOpacity onPress={handleContactUs}>
           <Text style={[styles.contactLink, { fontSize: responsiveFontSize(12) }]}>
@@ -306,6 +310,7 @@ const styles = StyleSheet.create({
     paddingVertical: responsivePadding(12),
     paddingHorizontal: 0,
     color: '#333',
+    textAlignVertical: 'center',
   },
   loginButton: {
     backgroundColor: '#1e9fd8',

@@ -12,6 +12,8 @@ import {
   KeyboardAvoidingView,
   Platform,
   Keyboard,
+  ImageBackground,
+  StatusBar,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -126,12 +128,23 @@ export default function ClaimPointsScreen() {
   // Activity List View
   if (showActivityList) {
     return (
-      <View style={[styles.container, { paddingTop: insets.top }]}>
-        <Header 
-          title="Claim Points" 
-          onBack={() => router.back()} 
-          showLogo 
+      <ImageBackground
+        source={require('../assets/img/bluebackgrounddark2.png')}
+        style={styles.container}
+        resizeMode="cover"
+      >
+        <StatusBar 
+          barStyle="light-content" 
+          backgroundColor="transparent" 
+          translucent={true}
         />
+        <View style={{ paddingTop: insets.top }}>
+          <Header 
+            title="Claim Points" 
+            onBack={() => router.back()} 
+            showLogo 
+          />
+        </View>
 
         <ScrollView contentContainerStyle={[
           styles.activitiesContent,
@@ -159,22 +172,33 @@ export default function ClaimPointsScreen() {
             </View>
           )}
         </ScrollView>
-      </View>
+      </ImageBackground>
     );
   }
 
   // Claim Form View
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
-      <Header 
-        title="Claim Your Points" 
-        onBack={handleBackToList}
-        showLogo
-        logoPath={require("../assets/img/ecmidlogoblack.png")} 
+    <View style={styles.container}>
+      <StatusBar 
+        barStyle="light-content" 
+        backgroundColor="transparent" 
+        translucent={true}
       />
+      <ImageBackground
+        source={require('../assets/img/bluebackgrounddark2.png')}
+        style={{ paddingTop: insets.top }}
+        resizeMode="cover"
+      >
+        <Header 
+          title="Claim Your Points" 
+          onBack={handleBackToList}
+          showLogo
+          logoPath={require("../assets/img/ecmidlogoblack.png")} 
+        />
+      </ImageBackground>
 
       <KeyboardAvoidingView 
-        style={{ flex: 1 }}
+        style={{ flex: 1, backgroundColor: '#fff' }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
       >
@@ -329,7 +353,7 @@ export default function ClaimPointsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#fff',
   },
   activitiesContent: {
     flexGrow: 1,

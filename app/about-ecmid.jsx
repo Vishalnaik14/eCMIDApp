@@ -9,6 +9,7 @@ import {
   ImageBackground,
   Linking,
   ActivityIndicator,
+  StatusBar,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -25,9 +26,7 @@ export default function AboutECMIDScreen() {
 
 As the commercial arm of the Institute, MSA is able to call on a wide selection of members and other maritime specialist and experts, who have various skills and knowledge acquired over many years. On one level the aim of the MSA is to provide basic short course training for IIMS members and non-members in a range of subjects. At a higher level the MSA delivers training and examinations leading to formal accreditation and qualifications certified by the IIMS.
 
-The MSA is being developed to meet the growing demand from a number of international marine organisations for specialised skills-based training and accreditation schemes. MSA delivers these training solutions at various locations, using specialist tutors and examiners.
-
-For more information visit the website at `,
+The MSA is being developed to meet the growing demand from a number of international marine organisations for specialised skills-based training and accreditation schemes. MSA delivers these training solutions at various locations, using specialist tutors and examiners.`,
     websiteUrl: 'https://marinesurveyingacademy.com',
     helpUrl: 'https://ecmid.iims.org.uk/ecmidWeb/Public/apphelp.aspx',
     lastUpdated: null,
@@ -102,92 +101,116 @@ For more information visit the website at `,
   };
 
   return (
-    <ImageBackground
-      source={require('../assets/img/bluebackgrounddark2.png')}
-      style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom }]}
-      resizeMode="cover"
-    >
-      {/* Header */}
-      <View style={styles.headerContainer}>
-        <TouchableOpacity
-          onPress={goBack}
-          style={styles.backButton}
-          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-          activeOpacity={0.7}
-        >
-          <Ionicons name="arrow-back" size={26} color="#ffffff" />
-        </TouchableOpacity>
-        <Text style={styles.headerText}>About eCMID CPD</Text>
-        <Image
-          source={require('../assets/img/ecmidlogoblack.png')}
-          style={styles.headerLogo}
-          resizeMode="contain"
-        />
-      </View>
+    <View style={styles.wrapper}>
+      {/* Status Bar */}
+      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+      
+      <ImageBackground
+        source={require('../assets/img/bluebackgrounddark2.png')}
+        style={styles.container}
+        resizeMode="cover"
+      >
+        {/* Status Bar Space with Background Image */}
+        <View style={[styles.statusBarBg, { height: insets.top }]} />
+        
+        {/* Header */}
+        <View style={styles.headerContainer}>
+          <TouchableOpacity
+            onPress={goBack}
+            style={styles.backButton}
+            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="arrow-back" size={26} color="#ffffff" />
+          </TouchableOpacity>
+          <Text style={styles.headerText}>About eCMID CPD</Text>
+          <Image
+            source={require('../assets/img/ecmidlogoblack.png')}
+            style={styles.headerLogo}
+            resizeMode="contain"
+          />
+        </View>
 
-      {/* Card with scrollable about text */}
-      <View style={styles.card}>
-        <View style={styles.cardHeader}>
-          <Text style={styles.cardHeaderText}>
-            {aboutData.title}
-          </Text>
-          {aboutData.lastUpdated && (
-            <Text style={styles.lastUpdatedText}>
-              Last updated: {new Date(aboutData.lastUpdated).toLocaleDateString()}
+        {/* Card with scrollable about text */}
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <Text style={styles.cardHeaderText}>
+              {aboutData.title}
             </Text>
+            {aboutData.lastUpdated && (
+              <Text style={styles.lastUpdatedText}>
+                Last updated: {new Date(aboutData.lastUpdated).toLocaleDateString()}
+              </Text>
+            )}
+          </View>
+          
+          {isLoading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#ffffff" />
+              <Text style={styles.loadingText}>Loading content...</Text>
+            </View>
+          ) : (
+            <>
+              <ScrollView
+                style={styles.cardScroll}
+                contentContainerStyle={styles.cardScrollContent}
+                showsVerticalScrollIndicator={false}
+              >
+                {error && (
+                  <View style={styles.errorBanner}>
+                    <Ionicons name="warning" size={16} color="#ffcc00" />
+                    <Text style={styles.errorText}>{error}</Text>
+                  </View>
+                )}
+                <Text style={styles.cardBodyText}>
+                  {aboutData.content}
+                </Text>
+              </ScrollView>
+              
+              {/* Fixed Link at Bottom */}
+              <View style={styles.linkContainer}>
+                <View style={styles.linkRow}>
+                  <Text style={styles.linkLabel}>For more information visit the website at </Text>
+                  <TouchableOpacity onPress={openWebsite} activeOpacity={0.7}>
+                    <Text style={styles.websiteLink}>
+                      {aboutData.websiteUrl}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </>
           )}
         </View>
-        
-        {isLoading ? (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#ffffff" />
-            <Text style={styles.loadingText}>Loading content...</Text>
-          </View>
-        ) : (
-          <ScrollView
-            style={styles.cardScroll}
-            contentContainerStyle={styles.cardScrollContent}
-            showsVerticalScrollIndicator={false}
-          >
-            {error && (
-              <View style={styles.errorBanner}>
-                <Ionicons name="warning" size={16} color="#ffcc00" />
-                <Text style={styles.errorText}>{error}</Text>
-              </View>
-            )}
-            <Text style={styles.cardBodyText}>
-              {aboutData.content}
-              <TouchableOpacity onPress={openWebsite} activeOpacity={0.7}>
-                <Text style={styles.websiteLink}>
-                  {aboutData.websiteUrl}
-                </Text>
-              </TouchableOpacity>
-            </Text>
-          </ScrollView>
-        )}
-      </View>
 
-      {/* Help button */}
-      <View style={styles.bottomBar}>
-        <TouchableOpacity 
-          style={styles.helpButton} 
-          onPress={openHelp} 
-          activeOpacity={0.85}
-          disabled={isLoading}
-        >
-          <Text style={styles.helpButtonText}>HELP</Text>
-        </TouchableOpacity>
-      </View>
-    </ImageBackground>
+        {/* Help button */}
+        <View style={[styles.bottomBar, { paddingBottom: insets.bottom || 16 }]}>
+          <TouchableOpacity 
+            style={styles.helpButton} 
+            onPress={openHelp} 
+            activeOpacity={0.85}
+            disabled={isLoading}
+          >
+            <Text style={styles.helpButtonText}>HELP</Text>
+          </TouchableOpacity>
+        </View>
+      </ImageBackground>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  wrapper: {
+    flex: 1,
+    backgroundColor: '#1e9fd8',
+  },
   container: {
     flex: 1,
   },
+  statusBarBg: {
+    backgroundColor: 'transparent',
+  },
   headerContainer: {
-    backgroundColor: '#1e9fd8',
+    backgroundColor: 'rgba(30, 159, 216, 0.9)',
     paddingHorizontal: 20,
     paddingVertical: 14,
     flexDirection: 'row',
@@ -246,8 +269,27 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 12,
     flexGrow: 1,
+    paddingBottom: 20,
   },
   cardBodyText: {
+    color: '#ffffff',
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  linkContainer: {
+    backgroundColor: 'rgba(0,0,0,0.35)',
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.2)',
+  },
+  linkRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+  },
+  linkLabel: {
     color: '#ffffff',
     fontSize: 13,
     lineHeight: 18,
@@ -287,7 +329,7 @@ const styles = StyleSheet.create({
   },
   bottomBar: {
     paddingHorizontal: 16,
-    paddingBottom: 16,
+    paddingTop: 8,
   },
   helpButton: {
     backgroundColor: 'rgba(255,255,255,0.3)',

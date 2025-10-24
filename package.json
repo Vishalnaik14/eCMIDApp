@@ -9,7 +9,9 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@sentry/react-native": "~7.2.0",
     "expo": "~54.0.12",
+    "expo-build-properties": "~1.0.9",
     "expo-camera": "~17.0.8",
     "expo-constants": "~18.0.9",
     "expo-document-picker": "~14.0.7",

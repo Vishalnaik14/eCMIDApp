@@ -81,7 +81,36 @@
         {
           "iCloudContainerEnvironment": "Production"
         }
+      ],
+      [
+        "@sentry/react-native/expo",
+        {
+          "organization": "vishalapp",
+          "project": "react-native"
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "enableProguardInReleaseBuilds": true,
+            "enableShrinkResourcesInReleaseBuilds": true
+          },
+          "ios": {}
+        }
       ]
-    ]
+    ],
+    "hooks": {
+      "postPublish": [
+        {
+          "file": "sentry-expo/upload-sourcemaps",
+          "config": {
+            "url": "https://sentry.io/",
+            "organization": "vishalapp",
+            "project": "react-native"
+          }
+        }
+      ]
+    }
   }
 }

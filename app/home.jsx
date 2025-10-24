@@ -105,7 +105,11 @@ export default function HomeScreen() {
   ];
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <ImageBackground
+      source={require('../assets/img/bluebackgrounddark2.png')}
+      style={[styles.container, { paddingTop: insets.top }]}
+      resizeMode="cover"
+    >
       {/* Header card: User's points */}
       <View style={styles.headerCard}>
         <View style={styles.headerLeft}>
@@ -153,12 +157,8 @@ export default function HomeScreen() {
         </TouchableOpacity>
       </View>
       
-      {/* Grid tiles with background image */}
-      <ImageBackground
-        source={require('../assets/img/bluebackgrounddark2.png')}
-        style={styles.gridContainer}
-        resizeMode="cover"
-      >
+      {/* Grid tiles */}
+      <View style={styles.gridContainer}>
         <View style={styles.grid}>
           {tiles.map((t, idx) => {
           const isLeft = idx % 2 === 0;
@@ -198,8 +198,8 @@ export default function HomeScreen() {
           );
         })}
         </View>
-      </ImageBackground>
-    </View>
+      </View>
+    </ImageBackground>
   );
 }
 

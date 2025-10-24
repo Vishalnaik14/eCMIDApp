@@ -8,6 +8,8 @@ import {
   ActivityIndicator,
   RefreshControl,
   Image,
+  ImageBackground,
+  StatusBar,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -150,7 +152,13 @@ export default function ActivityScreen() {
   );
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={styles.wrapper}>
+      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+      <ImageBackground
+        source={require('../assets/img/bluebackgrounddark2.png')}
+        style={[styles.container, { paddingTop: insets.top }]}
+        resizeMode="cover"
+      >
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity
@@ -173,12 +181,12 @@ export default function ActivityScreen() {
       {/* Activity List */}
       {isLoading && activities.length === 0 ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#1e9fd8" />
+          <ActivityIndicator size="large" color="#ffffff" />
           <Text style={styles.loadingText}>Loading activities...</Text>
         </View>
       ) : activities.length === 0 ? (
         <View style={styles.emptyContainer}>
-          <Ionicons name="document-text-outline" size={64} color="#cccccc" />
+          <Ionicons name="document-text-outline" size={64} color="#ffffff" />
           <Text style={styles.emptyText}>No activities found</Text>
           <Text style={styles.emptySubtext}>
             Your CPD activities will appear here
@@ -195,14 +203,19 @@ export default function ActivityScreen() {
           {activities.map((activity) => renderActivityCard(activity))}
         </ScrollView>
       )}
+      </ImageBackground>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  wrapper: {
     flex: 1,
     backgroundColor: '#1e9fd8',
+  },
+  container: {
+    flex: 1,
+    backgroundColor: 'transparent',
   },
   header: {
     flexDirection: 'row',
@@ -210,7 +223,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: '#1e9fd8',
+    backgroundColor: 'rgba(30, 159, 216, 0.9)',
   },
   backButton: {
     padding: 4,
@@ -234,35 +247,35 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: 'transparent',
   },
   loadingText: {
     marginTop: 12,
     fontSize: 16,
-    color: '#666666',
+    color: '#ffffff',
   },
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: 'transparent',
     paddingHorizontal: 32,
   },
   emptyText: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#666666',
+    color: '#ffffff',
     marginTop: 16,
   },
   emptySubtext: {
     fontSize: 14,
-    color: '#999999',
+    color: '#e0e0e0',
     marginTop: 8,
     textAlign: 'center',
   },
   scrollView: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: 'transparent',
   },
   scrollContent: {
     padding: 12,

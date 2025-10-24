@@ -6,19 +6,24 @@ import { useEffect, useState } from "react";
 import { Image, ImageBackground, StyleSheet, View } from "react-native";
 import * as SplashScreen from 'expo-splash-screen';
 import ErrorBoundary from '../components/ErrorBoundary';
+import { initSentry } from '../utils/sentry';
+import * as Sentry from '@sentry/react-native';
 
 // Prevent the splash screen from auto-hiding
 SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {
+function RootLayout() {
   const [appReady, setAppReady] = useState(false);
 
   useEffect(() => {
     async function prepare() {
       try {
+        // Initialize Sentry
+        initSentry();
+        
         console.log('Splash screen showing...');
-        // Keep splash screen visible for 5 seconds to ensure it's visible
-        await new Promise(resolve => setTimeout(resolve, 5000));
+        // Keep splash screen visible for 3 seconds to ensure it's visible
+        await new Promise(resolve => setTimeout(resolve, 3000));
         console.log('Splash screen hiding...');
       } catch (e) {
         console.warn(e);
@@ -87,3 +92,5 @@ const styles = StyleSheet.create({
     height: 200,
   },
 });
+
+export default Sentry.wrap(RootLayout);

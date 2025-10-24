@@ -1,3 +1,5 @@
+import { captureError, captureMessage, addBreadcrumb } from './sentry';
+
 // Performance monitoring utilities
 export const performanceMonitor = {
   // Track component render times
@@ -50,20 +52,35 @@ export const memoryMonitor = {
 // Error tracking utilities
 export const errorTracker = {
   logError: (error, context = {}) => {
-    console.error('Error occurred:', {
+    const errorData = {
       message: error.message,
       stack: error.stack,
       context,
       timestamp: new Date().toISOString(),
-    });
+    };
+    
+    console.error('Error occurred:', errorData);
+    
+    // Send to Sentry
+    captureError(error, context);
   },
 
   logWarning: (message, context = {}) => {
-    console.warn('Warning:', {
+    const warningData = {
       message,
       context,
       timestamp: new Date().toISOString(),
-    });
+    };
+    
+    console.warn('Warning:', warningData);
+    
+    // Send to Sentry
+    captureMessage(message, 'warning', context);
+  },
+  
+  // Add breadcrumb for tracking user actions
+  trackAction: (action, data = {}) => {
+    addBreadcrumb(action, 'user-action', 'info', data);
   },
 };
 

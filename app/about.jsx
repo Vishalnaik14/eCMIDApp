@@ -8,12 +8,15 @@ import {
   Linking,
   ScrollView,
   ImageBackground,
+  StatusBar,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function AboutScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   const openWebsite = async () => {
     const url = 'https://www.edot-solutions.com';
@@ -45,60 +48,65 @@ export default function AboutScreen() {
   };
 
   return (
-    <ImageBackground
-      source={require('../assets/img/bluebackgrounddark2.png')}
-      style={styles.container}
-      resizeMode="cover"
-    >
-      {/* Header */}
-      <View style={styles.headerContainer}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => router.back()}
-          hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
-          activeOpacity={0.7}
-        >
-          <Ionicons name="arrow-back" size={26} color="#ffffff" />
-        </TouchableOpacity>
-        <Text style={styles.headerText}>About App</Text>
-        <Image
-          source={require('../assets/img/ecmidlogoblack.png')}
-          style={styles.headerLogo}
-          resizeMode="contain"
-        />
-      </View>
-
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.contentContainer}
-        showsVerticalScrollIndicator={false}
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent={true} />
+      
+      <ImageBackground
+        source={require('../assets/img/bluebackgrounddark2.png')}
+        style={[styles.backgroundImage, { paddingTop: insets.top }]}
+        resizeMode="cover"
       >
-        {/* Center Logo */}
-        <Image
-          source={require('../assets/img/ecmidlogoblack.png')}
-          style={styles.centerLogo}
-          resizeMode="contain"
-        />
-
-        {/* App Version Section */}
-        <View style={styles.section}>
-          <Text style={styles.appTitle}>eCMID App Version</Text>
-          <Text style={styles.appVersion}>v1.0.16</Text>
+        {/* Blue Header Bar */}
+        <View style={styles.headerContainer}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => router.back()}
+            hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="arrow-back" size={26} color="#ffffff" />
+          </TouchableOpacity>
+          <Text style={styles.headerText}>About App</Text>
+          <Image
+            source={require('../assets/img/ecmidlogoblack.png')}
+            style={styles.headerLogo}
+            resizeMode="contain"
+          />
         </View>
 
-        {/* Developed By Section */}
-        <View style={styles.section}>
-          <Text style={styles.developedByTitle}>Developed By</Text>
-          <Text style={styles.developedByName}>eDOT Solutions</Text>
-          <TouchableOpacity onPress={openWebsite} activeOpacity={0.8}>
-            <Text style={styles.websiteLink}>www.edot-solutions.com</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={openEmail} activeOpacity={0.8} style={styles.emailContainer}>
-            <Text style={styles.emailLink}>contact@edot-solutions.com</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </ImageBackground>
+        {/* Content Area */}
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.contentContainer}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Center Logo */}
+          <Image
+            source={require('../assets/img/ecmidlogoblack.png')}
+            style={styles.centerLogo}
+            resizeMode="contain"
+          />
+
+          {/* App Version Section */}
+          <View style={styles.section}>
+            <Text style={styles.appTitle}>eCMID App Version</Text>
+            <Text style={styles.appVersion}>v1.0.16</Text>
+          </View>
+
+          {/* Developed By Section */}
+          <View style={styles.section}>
+            <Text style={styles.developedByTitle}>Developed By</Text>
+            <Text style={styles.developedByName}>eDOT Solutions</Text>
+            <TouchableOpacity onPress={openWebsite} activeOpacity={0.8}>
+              <Text style={styles.websiteLink}>www.edot-solutions.com</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={openEmail} activeOpacity={0.8} style={styles.emailContainer}>
+              <Text style={styles.emailLink}>contact@edot-solutions.com</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </ImageBackground>
+    </View>
   );
 }
 
@@ -106,11 +114,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  backgroundImage: {
+    flex: 1,
+  },
   headerContainer: {
     backgroundColor: '#1e9fd8',
-    paddingTop: 50,
-    paddingBottom: 20,
-    paddingHorizontal: 20,
+    paddingHorizontal: 10,
+    paddingVertical: 10,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -146,7 +156,7 @@ const styles = StyleSheet.create({
   centerLogo: {
     width: 180,
     height: 180,
-    marginTop: 20,
+    marginTop: 80,
   },
   section: {
     alignItems: 'center',

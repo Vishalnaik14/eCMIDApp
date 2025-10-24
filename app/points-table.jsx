@@ -8,6 +8,8 @@ import {
   ScrollView,
   ActivityIndicator,
   Alert,
+  ImageBackground,
+  StatusBar,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -31,19 +33,6 @@ export default function PointsTableScreen() {
       // TODO: Replace with your actual API endpoint
       // const response = await fetch('YOUR_API_ENDPOINT/activities?displayInApp=true');
       // const data = await response.json();
-
-      // Example API response structure:
-      // {
-      //   activities: [
-      //     {
-      //       id: "1",
-      //       description: "Subscription to a marine publication, journal or magazine",
-      //       comments: "Receipt of regular professional or industry updates.",
-      //       points: 1,
-      //       displayInApp: true
-      //     }
-      //   ]
-      // }
 
       // Mock data for now (remove when API is ready)
       const mockActivities = [
@@ -125,20 +114,18 @@ export default function PointsTableScreen() {
   };
 
   const handleActivityPress = (activity) => {
-    // TODO: Navigate to activity detail page or show more info
+    // No action on press - just allows touch feedback
     console.log('Activity pressed:', activity.id);
-    // Example: Show alert with activity details
-    // Alert.alert(
-    //   activity.description,
-    //   activity.comments || 'No additional comments',
-    //   [{ text: 'OK' }]
-    // );
-    // Or navigate to detail page:
-    // navigateTo('/activity-detail', { activityId: activity.id });
   };
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={styles.wrapper}>
+      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+      <ImageBackground
+        source={require('../assets/img/bluebackgrounddark2.png')}
+        style={[styles.container, { paddingTop: insets.top }]}
+        resizeMode="cover"
+      >
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity
@@ -163,55 +150,62 @@ export default function PointsTableScreen() {
       <ScrollView 
         style={styles.scrollView} 
         contentContainerStyle={styles.scrollViewContent}
-        showsVerticalScrollIndicator={true}
+        showsVerticalScrollIndicator={false}
       >
         {isLoading ? (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#1e9fd8" />
+            <ActivityIndicator size="large" color="#ffffff" />
             <Text style={styles.loadingText}>Loading activities...</Text>
           </View>
         ) : (
-          activities.map((activity, index) => (
+          activities.map((activity) => (
             <TouchableOpacity
               key={activity.id}
-              style={[
-                styles.activityCard,
-                index === 0 && styles.firstCard
-              ]}
-              activeOpacity={0.7}
+              style={styles.activityCard}
+              activeOpacity={0.8}
               onPress={() => handleActivityPress(activity)}
             >
-              <View style={styles.activityContent}>
-                <Text style={styles.activityDescription}>
-                  {activity.description}
-                </Text>
-                {activity.comments ? (
-                  <Text style={styles.activityComments}>
-                    {activity.comments}
+              <View style={styles.cardContent}>
+                <View style={styles.textContainer}>
+                  <Text style={styles.activityTitle}>
+                    {activity.description}
                   </Text>
-                ) : null}
-              </View>
-              <View style={styles.pointsBadge}>
-                <Text style={styles.pointsNumber}>{activity.points}</Text>
-                <Text style={styles.pointsLabel}>
-                  Point{activity.points > 1 ? 's' : ''}
-                </Text>
+                  {activity.comments ? (
+                    <Text style={styles.activitySubtitle}>
+                      {activity.comments}
+                    </Text>
+                  ) : null}
+                </View>
+
+                <View style={styles.pointsContainer}>
+                  <View style={styles.pointsBadge}>
+                    <Text style={styles.pointsNumber}>{activity.points}</Text>
+                  </View>
+                  <Text style={styles.pointsLabel}>
+                    Point{activity.points > 1 ? 's' : ''}
+                  </Text>
+                </View>
               </View>
             </TouchableOpacity>
           ))
         )}
       </ScrollView>
+      </ImageBackground>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  wrapper: {
+    flex: 1,
+    backgroundColor: '#1e9fd8',
+  },
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: 'transparent',
   },
   header: {
-    backgroundColor: '#1e9fd8',
+    backgroundColor: 'rgba(30, 159, 216, 0.9)',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -244,7 +238,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollViewContent: {
-    padding: 0,
+    padding: 16,
+    paddingBottom: 24,
   },
   loadingContainer: {
     flex: 1,
@@ -255,60 +250,65 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 12,
     fontSize: 14,
-    color: '#666666',
+    color: '#ffffff',
   },
   activityCard: {
     backgroundColor: '#ffffff',
+    borderRadius: 8,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  cardContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    padding: 16,
   },
-  firstCard: {
-    borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
+  iconContainer: {
+    marginRight: 12,
+    display: 'none',
   },
-  activityContent: {
+  textContainer: {
     flex: 1,
-    marginRight: 16,
+    marginRight: 12,
   },
-  activityDescription: {
+  activityTitle: {
     fontSize: 14,
-    fontWeight: '400',
+    fontWeight: '600',
     color: '#333333',
-    marginBottom: 6,
+    marginBottom: 4,
     lineHeight: 20,
   },
-  activityComments: {
+  activitySubtitle: {
     fontSize: 12,
     color: '#666666',
     lineHeight: 18,
-    marginTop: 4,
+  },
+  pointsContainer: {
+    alignItems: 'center',
+    minWidth: 60,
   },
   pointsBadge: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: '#1e9fd8',
     alignItems: 'center',
     justifyContent: 'center',
-    minWidth: 60,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    backgroundColor: '#e3f2fd',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#1e9fd8',
+    marginBottom: 4,
   },
   pointsNumber: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#1e9fd8',
-    marginBottom: 2,
+    color: '#ffffff',
   },
   pointsLabel: {
     fontSize: 11,
-    fontWeight: '600',
-    color: '#1e9fd8',
-    textTransform: 'capitalize',
+    color: '#666666',
+    fontWeight: '500',
+    textAlign: 'center',
   },
 });
